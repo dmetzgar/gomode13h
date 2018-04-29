@@ -1,0 +1,10 @@
+baseURL = "http://mode19.net/"
+languageCode = "en-us"
+title = "Mode 13h"
+theme = "base16"
+disqusShortName = "mode13h"
+
+# Source code settings
+PygmentsCodeFences = true
+PygmentsStyle = "monokai"
+PygmentsOptions = "linenos=table"

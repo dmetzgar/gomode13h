@@ -1,0 +1,36 @@
+{{ $baseurl := .Site.BaseURL }}
+<main role="main" class="homepage">
+
+  {{ partial "hero.html" . }}
+
+  <h1 class="headline">Recent Posts</h1>
+
+  {{/* Define a section to pull recent posts from. For Hugo 0.20 this will default to the section with the most number of pages. */}}
+  {{ $mainSections := .Site.Params.mainSections | default (slice "post") }}
+  {{/* Create a variable with that section to use in multiple places. */}}
+  {{ $section := where .Site.RegularPages "Section" "in" $mainSections }}
+  {{/* Check to see if the section is defined for ranging through it */}}
+  {{ $section_count := len $section }}
+  {{ $n_posts := $.Param "recent_posts_number" | default 3 }}
+
+  <div class="article-list">
+    {{ range (first $n_posts $section) }}
+      {{ partial "article-list-item.html" . }}
+    {{ end }}
+  </div>
+
+  {{ if ge $section_count (add $n_posts 1) }}
+  <section>
+    <h1 class="headline">More</h1>
+    {{/* Now, range through the next four after the initial $n_posts items. Nest the requirements, "after" then "first" on the outside */}}
+    {{ range (first 4 (after $n_posts $section))  }}
+      <h2>
+        <a href="{{ .URL }}">
+          {{ .Title }}
+        </a>
+      </h2>
+    {{ end }}
+    </section>
+  {{ end }}
+
+</main>
