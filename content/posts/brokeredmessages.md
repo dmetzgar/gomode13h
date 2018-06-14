@@ -5,8 +5,9 @@ tags: ["Debug"]
 ---
 
 This post is for those using ServiceBus who would like to see the contents 
-of a BrokeredMessage from a live debug session or dump file. I assume you 
-already know how to use windbg.
+of a BrokeredMessage from a live debug session or dump file. 
+
+<!--more-->
 
 Open the dump file in windbg and load SOS. Then execute the following command:
 

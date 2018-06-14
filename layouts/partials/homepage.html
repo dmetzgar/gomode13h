@@ -20,7 +20,7 @@
   </div>
 
   {{ if ge $section_count (add $n_posts 1) }}
-  <section>
+  <section class="article-more">
     <h1 class="headline">More</h1>
     {{/* Now, range through the next four after the initial $n_posts items. Nest the requirements, "after" then "first" on the outside */}}
     {{ range (first 4 (after $n_posts $section))  }}
@@ -30,7 +30,8 @@
         </a>
       </h2>
     {{ end }}
-    </section>
+    <h2><a href="{{ "allposts" | relURL }}">All Posts</a></h2>
+  </section>
   {{ end }}
 
 </main>

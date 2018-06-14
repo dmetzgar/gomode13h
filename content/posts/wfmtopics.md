@@ -1,12 +1,11 @@
 ---
-title: "Workflow Performance Tip - Custom CacheMetaData"
-date: 2014-11-20
-tags: ["Workflow"]
+title: "Workflow Manager Internals - Topics"
+date: 2018-06-14
+tags: ["Workflow", "Workflow Manager", "Service Bus"]
+draft: true
 ---
 
 When writing custom activities for WF4, you can cut some performance costs by overriding the CacheMetadata method. By default, CacheMetadata will use reflection to determine what properties are available as in/out arguments and setup their binding. Reflection can have a significant cost, as I'll show in this post.
-
-<!--more-->
 
 The example below is not something you'd typically see when designing a workflow. It is an extreme case meant to stress CacheMetadata. We'll start with the custom activity itself.
 

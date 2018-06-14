@@ -8,6 +8,8 @@ tags: ["Performance"]
 and free tool for generating HTTP load. Here I will show you how to use it to simulate user traffic 
 watching media content served by Azure Media Services.</p>
 
+<!--more-->
+
 Use Fiddler to examine the requests
 ===================================
 

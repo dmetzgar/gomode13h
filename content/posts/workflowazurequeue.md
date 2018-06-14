@@ -6,6 +6,8 @@ tags: ["Workflow","Azure"]
 
 A WF4 activity to queue a message in an Azure Queue.
 
+<!--more-->
+
 ```csharp
 public sealed class QueueMessageActivity : AsyncCodeActivity
 {

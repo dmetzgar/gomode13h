@@ -8,6 +8,8 @@ The [WCF Azure table transport](/posts/azuretablechannel) is a fun adaptation of
 the original example by Dr. Nick, which used files as a transport layer. I thought I would take it a 
 step further and turn it into a [Nuget package](https://www.nuget.org/packages/AzureTableWcfTransport).
 
+<!--more-->
+
 To set up a server, you would add the following to your config:
 
 ```xml
