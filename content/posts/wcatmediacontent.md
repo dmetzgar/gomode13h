@@ -21,7 +21,7 @@ default example.
 
 With Fiddler capturing traffic, start the presentation and let it go for about 30 seconds.
 
-![](https://dmsignalrtest.blob.core.windows.net/blogimages/WcatMediaContent_BBB.PNG)
+![Graph of 30 seconds of video](/img/WcatMediaContent_BBB.png "Graph of 30 seconds of video")
 
 Let's look at the first few requests that Fiddler captured:
 
@@ -47,7 +47,7 @@ The next request is to get the manifest. Fiddler should recognize this as an XML
 in XML format. HLS, HDS, and DASH all use their own formats. They all have similar types of information. Let's look at
 the contents of the manifest:
 
-![](https://dmsignalrtest.blob.core.windows.net/blogimages/WcatMediaContent_SmoothManifest.PNG)
+![Contents from smooth streaming manifest](/img/WcatMediaContent_SmoothManifest.png "Contents from smooth streaming manifest")
 
 There are typically two stream indexes. One for video and one for audio. They will have QualityLevel nodes indicating
 details about the varying bitrates. Here we can see that 2,436,000 is the top bit rate with 1280x720 resolution.

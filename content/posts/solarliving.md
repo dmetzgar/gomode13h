@@ -49,7 +49,7 @@ direct sunlight, but not bad. But even on a perfect, cloudless day like we just 
 in Seattle, your actual generation is limited to about 3 hours when the sun is at its
 apogee. A picture taken from my inverter will make this clearer:
 
-![](https://dmsignalrtest.blob.core.windows.net/blogimages/SolarGraph.jpg)
+![Graph of solar power generation from inverter](/img/SolarGraph.jpg "Graph of solar power generation from inverter")
 
 I have a 3.8 kW inverter. My panels can generate a little bit more at peak, which is
 why it's flat on the graph. The installer said the inverter can handle this and so 

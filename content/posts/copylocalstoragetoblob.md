@@ -66,7 +66,7 @@ In Azure SDK 2.5, you can no longer make the diagnostics change through code. No
 the diagnostics.wadcfgx file. In the solution explorer, find your Azure cloud project, expand the roles,
 right click on the role you want and select Properties. Click on Configure under Diagnostics:
 
-![](https://dmsignalrtest.blob.core.windows.net/blogimages/CopyLocalStorageToBlob_ConfigDiag.PNG)
+![Configure button in the Diagnostics section of Properties](/img/CopyLocalStorageToBlob_ConfigDiag.png "Configure button in the Diagnostics section of Properties")
 
 From there, go to the Log Directories tab. There is not an option available to log from a local storage
 folder, so you have to use an absolute directory. You would think that since it can expand environment
@@ -81,7 +81,7 @@ was unsuccessful. So, you have to use an absolute path. The C: drive is where al
 goes. So you would have to enter something like C:\WcfLogs to the textbox at the bottom and click 
 Add Directory.
 
-![](https://dmsignalrtest.blob.core.windows.net/blogimages/CopyLocalStorageToBlob_LogDirectories.PNG)
+![Specifying log directories](/img/CopyLocalStorageToBlob_LogDirectories.png "Specifying log directories")
 
 After it's added, make sure to set the container name.
 
