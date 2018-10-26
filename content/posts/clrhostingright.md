@@ -21,10 +21,10 @@ I assume you are using Visual Studio. If that is not the case, install the Windo
 cpp file, include the <metahost.h> header. Let's walk through the process of hosting the CLR. The 
 first step is [CLRCreateInstance](https://msdn.microsoft.com/en-us/library/dd537633%23v=vs.110%24.aspx).
 
-Note that the metahost header comes from the Windows SDK. You also
+*Note that the metahost header comes from the Windows SDK. You also
 need to link in the library file. To do this, open the project properties. Go to
 Configuration Properties->Linker->Input. Edit the Additional Dependencies and add
-mscoree.lib.
+mscoree.lib.*
 
 ```c
 ICLRMetaHost *pMetaHost = NULL;
