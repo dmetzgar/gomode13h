@@ -43,7 +43,7 @@ docker-compose up
 
 Some quick explanation of what this does. First is the weird ServicePointManager statement:
 
-```
+```PowerShell
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 ```
 
