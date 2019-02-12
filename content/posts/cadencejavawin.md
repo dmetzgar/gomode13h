@@ -1,6 +1,6 @@
 ---
-title: "Cadence Java Client Starter"
-date: 2019-02-10
+title: "Cadence Java Samples on Windows"
+date: 2019-02-12
 tags: ["Cadence","Workflow"]
 ---
 
