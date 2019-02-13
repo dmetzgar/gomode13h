@@ -7,7 +7,7 @@ tags: ["Cadence","Workflow"]
 [Uber Cadence](https://cadenceworkflow.io) is a powerful tool for writing long-running applications. It's used at Uber for many scenarios
 because of its consistency guarantees and simple programming model. At Uber, we use Mac and Linux so all the instructions for running 
 Cadence locally are geared toward Mac. I have mostly Windows machines but would still like to experiment with it at home. Fortunately, 
-the Cadence is a Docker container so it can be run on Windows.
+the Cadence server is a Docker container so it can be run on Windows.
 
 The instructions for running the Cadence server on Mac are:
 
