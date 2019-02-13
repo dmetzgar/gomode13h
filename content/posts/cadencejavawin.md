@@ -55,3 +55,5 @@ USER environment variable for that application. To run/debug a sample, find the 
 *src/main/java/com.uber.cadence.samples/hello*. Right click on one of the sample classes and choose **Run '-classname-.main()'** or
 **Debug '-classname-.main()'**. The first time it's run, there will be a null pointer exception in the console. Add the environment 
 variable, run again, and it should work.
+
+Another way to approach this is to add the USER environment variable to your user profile and logout/login. Then you don't have to setup configurations for each sample.
