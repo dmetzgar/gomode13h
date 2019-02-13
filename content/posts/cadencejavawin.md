@@ -42,7 +42,9 @@ gradlew.bat -q execute -PmainClass=com.uber.cadence.samples.common.RegisterDomai
 ```
 
 This will register a domain called **sample** on your local Cadence instance. All workflows and activities are run within a domain. This 
-is also a good test to make sure the Cadence server and client are working properly. 
+is also a good test to make sure the Cadence server and client are working properly. Note that this domain will not need to 
+be created again if you shut down docker using ctrl+c. If you use `docker-compose down` then the data will be wiped out and 
+you'll need to create the domain again.
 
 With the domain created, it's now possible to run the samples. There are instructions for running these from the command line 
 included in the [sample repo's readme](https://github.com/uber/cadence-java-samples/blob/master/README.md#run-the-samples). 
