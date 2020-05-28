@@ -4,6 +4,10 @@ date: 2019-02-09
 tags: ["Cadence","Workflow"]
 ---
 
+This post is about running Cadence on Windows.
+
+<!--more-->
+
 [Uber Cadence](https://cadenceworkflow.io) is a powerful tool for writing long-running applications. It's used at Uber for many scenarios
 because of its consistency guarantees and simple programming model. At Uber, we use Mac and Linux so all the instructions for running 
 Cadence locally are geared toward Mac. I have mostly Windows machines but would still like to experiment with it at home. Fortunately, 

@@ -6,6 +6,8 @@ tags: ["Cadence","Workflow"]
 
 This post covers how to run the Cadence Java sample workflows on Windows. 
 
+<!--more-->
+
 First, you'll need the JDK installed. If you're using Java 11, you
 may run into [this issue](https://github.com/facebook/react-native/issues/22487), which prints *Could not determine java version from 
 '11.0.1'* when you attempt to build the samples. The TLDR is that you should just downgrade to 
