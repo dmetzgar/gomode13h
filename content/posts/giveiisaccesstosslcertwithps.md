@@ -23,7 +23,7 @@ $cert = Get-Item $certLoc
 $keyPath = $env:ProgramData + "\Microsoft\Crypto\RSA\MachineKeys\"
 $keyName = $cert.PrivateKey.CspKeyContainerInfo.UniqueKeyContainerName
 $keyFullPath = $keyPath + $keyName
-$acl = (Get-Item $keyFullPath).GetAccessControl
+$acl = (Get-Item $keyFullPath).GetAccessControl("Access")
 $permission="IIS_IUSRS","Full","Allow"
 $accessRule = New-Object -TypeName System.Security.AccessControl.FileSystemAccessRule -ArgumentList $permission
 $acl.AddAccessRule($accessRule)
