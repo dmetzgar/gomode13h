@@ -11,7 +11,7 @@
   {{ $section := where .Site.RegularPages "Section" "in" $mainSections }}
   {{/* Check to see if the section is defined for ranging through it */}}
   {{ $section_count := len $section }}
-  {{ $n_posts := $.Param "recent_posts_number" | default 3 }}
+  {{ $n_posts := $.Param "recent_posts_number" | default 7 }}
 
   <div class="article-list">
     {{ range (first $n_posts $section) }}
@@ -23,7 +23,7 @@
   <section class="article-more">
     <h1 class="headline">More</h1>
     {{/* Now, range through the next four after the initial $n_posts items. Nest the requirements, "after" then "first" on the outside */}}
-    {{ range (first 4 (after $n_posts $section))  }}
+    {{ range (first 8 (after $n_posts $section))  }}
       <h2>
         <a href="{{ .URL }}">
           {{ .Title }}
