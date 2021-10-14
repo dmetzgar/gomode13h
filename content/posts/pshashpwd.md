@@ -67,7 +67,7 @@ function Get-PasswordHash {
 The constructor for `PasswordHasher` defaults the options to `null`. However,
 PowerShell kept complaining it couldn't find a constructor. So the code creates
 a `PasswordHasherOptions` instance and calls
-(Options.Create)[https://docs.microsoft.com/dotnet/api/microsoft.extensions.options.options.create].
+[Options.Create](https://docs.microsoft.com/dotnet/api/microsoft.extensions.options.options.create).
 Also note that the generic for `PasswordHasher` is `string`. This is the type
 of the user. A brief look at
 [the code](https://github.com/dotnet/aspnetcore/blob/main/src/Identity/Extensions.Core/src/PasswordHasher.cs)
