@@ -88,7 +88,7 @@ This will start the job. Before you can get logs for it, you need to wait for
 it to start. This waits for the Ready condition or 10 seconds, whichever comes
 first.
 
-``bash
+```bash
 kubectl wait --for=condition=Ready job/run-console-app --timeout=10s
 ```
 
