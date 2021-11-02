@@ -82,7 +82,7 @@ body {
   line-height: 1.5;
   /* font-size: 100%; */
   font-size: 1.3em;
-  font-family: 'ArticleTextFont';
+  font-family: "Roboto Slab","ff-tisa-web-pro","Georgia",Arial,sans-serif;
 }
 
 .container {
@@ -160,7 +160,7 @@ footer {
 /* Typography */
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'HeaderFont';
+  font-family: "Roboto Slab","ff-tisa-web-pro","Georgia",Arial,sans-serif;
   font-weight: bold;
   line-height: 1.25;
   margin-top: 1em;
