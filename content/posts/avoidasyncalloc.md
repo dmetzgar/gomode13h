@@ -2,7 +2,6 @@
 title: "Only make your C# methods async when needed"
 date: 2022-07-03
 tags: ["C#","Performance"]
-draft: true
 ---
 
 C# async methods perform an allocation to start the async state machine.
