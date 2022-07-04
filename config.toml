@@ -5,6 +5,17 @@ theme = "base16"
 disqusShortName = "mode13h"
 
 # Source code settings
-PygmentsCodeFences = true
-PygmentsStyle = "monokai"
-PygmentsOptions = "linenos=table"
+# PygmentsCodeFences = true
+# PygmentsStyle = "monokai"
+# PygmentsOptions = "linenos=table"
+
+[markup]
+  [markup.highlight]
+    codeFences = true
+    lineNoStart = 1
+    lineNos = true
+    lineNumbersInTable = true
+    noClasses = false
+    noHl = false
+    style = 'monokai'
+    tabWidth = 4
