@@ -1,7 +1,7 @@
 ---
 title: "Architecting enterprise applications before .NET Core"
 date: 2017-01-06
-tags: [".NET Core"]
+tags: ["dotnetcore"]
 ---
 
 _An excerpt from my new book: [.NET Core in Action](https://manning.com/books/dotnet-core-in-action)_

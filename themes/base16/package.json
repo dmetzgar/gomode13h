@@ -17,10 +17,10 @@
   },
   "homepage": "https://github.com/htdvisser/hugo-base16-theme#readme",
   "devDependencies": {
-    "gulp": "^3.9.1",
-    "gulp-postcss": "^7.0.1",
+    "gulp": "^4.0.2",
+    "gulp-postcss": "^9.0.1",
     "gulp-sourcemaps": "^2.6.4",
-    "gulp-watch": "^5.0.0",
-    "postcss-preset-env": "^3.4.0"
+    "gulp-watch": "^5.0.1",
+    "postcss-preset-env": "^7.8.2"
   }
 }

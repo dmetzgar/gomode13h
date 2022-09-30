@@ -1,7 +1,7 @@
 ---
 title: "Azure Queue Message Workflow Activity"
 date: 2014-10-08
-tags: ["Workflow","Azure"]
+tags: ["workflow","azure"]
 ---
 
 A WF4 activity to queue a message in an Azure Queue.

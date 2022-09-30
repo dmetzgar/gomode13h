@@ -1,7 +1,7 @@
 ---
 title: "Editing Azure Cloud Service csdef Files with NuGet"
 date: 2014-10-08
-tags: ["Azure","NuGet"]
+tags: ["azure","nuget"]
 ---
 
 If you want to edit a csdef file in a cloud project from your NuGet package, this can be done using the install.ps1 PowerShell script in the tools directory.

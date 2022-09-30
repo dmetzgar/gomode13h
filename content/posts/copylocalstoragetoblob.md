@@ -1,7 +1,7 @@
 ---
 title: "Azure Diagnostics: Backup Local Storage to Blob"
 date: 2014-11-20
-tags: ["Azure"]
+tags: ["azure"]
 ---
 
 Windows Azure Diagnostics gives you the ability to watch directories on your cloud services and copy the files within to a 

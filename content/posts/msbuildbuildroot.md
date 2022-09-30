@@ -1,7 +1,7 @@
 ---
 title: "Finding the Root Build Folder with MSBuild"
 date: 2014-10-08
-tags: ["MSBuild"]
+tags: ["msbuild"]
 ---
 
 This is a common practice that I find in Microsoft projects. In MSBuild you sometimes want to get to the root folder of where all your projects are checked in. There is no automatic way to do this. However, you can make it happen by doing the following.

@@ -1,7 +1,7 @@
 ---
 title: "How to hash passwords in PowerShell with ASP.NET Core Identity PasswordHasher"
 date: 2021-10-14
-tags: ["PowerShell", "ASP.NET"]
+tags: ["powershell", "aspnet"]
 ---
 
 Calling .NET types from PowerShell is not always as straightforward as it

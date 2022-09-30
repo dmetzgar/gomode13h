@@ -1,7 +1,7 @@
 ---
 title: "Start Kubernetes job from command line with parameters"
 date: 2021-10-18
-tags: ["Kubernetes"]
+tags: ["kubernetes"]
 ---
 
 Create a job in Kubernetes via shell script and pass in parameters from the

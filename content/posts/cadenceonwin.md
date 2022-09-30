@@ -1,7 +1,7 @@
 ---
 title: "Running Cadence on Windows"
 date: 2019-02-09
-tags: ["Cadence","Workflow"]
+tags: ["cadence","workflow"]
 ---
 
 This post is about running Cadence on Windows.

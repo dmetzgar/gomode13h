@@ -1,7 +1,7 @@
 ---
 title: "Azure table storage WCF transport channel"
 date: 2014-10-08
-tags: ["Azure","WCF"]
+tags: ["azure","wcf"]
 ---
 
 Communicating with an Azure role through table storage is a common practice. When you setup a worker role, you typically have it watching a 

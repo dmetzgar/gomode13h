@@ -1,7 +1,7 @@
 ---
 title: "Hosting the CLR the Old Way"
 date: 2015-06-02
-tags: ["Native"]
+tags: ["nativecode"]
 ---
 
 Your native C++ Windows application can load the CLR in its process. This is easier than you think. Sometimes 

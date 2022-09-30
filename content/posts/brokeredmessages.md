@@ -1,7 +1,7 @@
 ---
 title: "Checking contents of ServiceBus brokered messages"
 date: 2016-09-28
-tags: ["Debug"]
+tags: ["debug"]
 ---
 
 This post is for those using ServiceBus who would like to see the contents 

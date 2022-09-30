@@ -1,7 +1,7 @@
 ---
 title: "Give IIS access to an SSL Certificate with PowerShell"
 date: 2020-06-11
-tags: ["PowerShell", "IIS"]
+tags: ["powershell", "iis"]
 ---
 
 A PowerShell script to allow the "IIS_IUSRS" group to get access to a certificate's private key. 

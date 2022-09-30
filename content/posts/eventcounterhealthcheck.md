@@ -1,7 +1,7 @@
 ---
 title: "Custom Event Counter-based ASP.NET Core Health Check"
 date: 2021-08-10
-tags: [".NET Core","ASP.NET", "ETW"]
+tags: ["dotnetcore","aspnet", "etw"]
 ---
 
 ASP.NET Core has built-in, customizable health check middleware. A utility can

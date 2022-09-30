@@ -1,7 +1,7 @@
 ---
 title: "Override SAML settings in UiPath Identity Server"
 date: 2021-01-07
-tags: ["UiPath","SAML"]
+tags: ["uipath","saml"]
 ---
 
 If you installed UiPath Orchestrator 2020.4 or later and need specific settings for your SAML provider to work, there 

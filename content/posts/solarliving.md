@@ -1,7 +1,7 @@
 ---
 title: "The Reality of Home Solar Power"
 date: 2015-06-11
-tags: ["Misc"]
+tags: ["misc"]
 ---
 
 A [community group](http://greenwa.org) in my area developed a bulk purchasing program for home solar energy. 

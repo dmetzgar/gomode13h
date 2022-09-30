@@ -1,7 +1,7 @@
 ---
 title: "Reboot Azure Role Instance Workflow Activity"
 date: 2014-10-08
-tags: ["Workflow","Azure"]
+tags: ["workflow","azure"]
 ---
 
 A WF4 activity to reboot a role instance in an Azure cloud service deployment. Note that this method uses the Azure REST API and requires a management certificate to be installed on the machine executing the workflow in the local machine store.

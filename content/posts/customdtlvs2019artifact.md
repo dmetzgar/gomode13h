@@ -1,7 +1,7 @@
 ---
 title: "Creating a custom DevTest Labs artifact for Visual Studio 2019"
 date: 2020-05-28
-tags: ["DevTest Labs", "Azure", "Visual Studio"]
+tags: ["devtestlabs", "azure", "visualstudio"]
 ---
 
 One way to build a custom DevTest Labs artifact to install Visual Studio 2019.

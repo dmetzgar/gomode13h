@@ -1,7 +1,7 @@
 ---
 title: "WCF Azure Table Transport on Nuget"
 date: 2014-10-09
-tags: ["Azure","WCF"]
+tags: ["azure","wcf"]
 ---
 
 The [WCF Azure table transport](/posts/azuretablechannel) is a fun adaptation of 

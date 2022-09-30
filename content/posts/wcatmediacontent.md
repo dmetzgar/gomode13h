@@ -1,7 +1,7 @@
 ---
 title: "Using WCAT to Simulate Watching Media Content"
 date: 2014-11-20
-tags: ["Performance"]
+tags: ["performance"]
 ---
 
 [WCAT](http://www.iis.net/downloads/community/2007/05/wcat-63-%28x64%29) is a powerful, lightweight, 

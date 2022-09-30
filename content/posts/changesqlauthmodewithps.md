@@ -1,7 +1,7 @@
 ---
 title: "Changing SQL Authentication Mode with PowerShell"
 date: 2020-06-02
-tags: ["PowerShell", "SQL Server"]
+tags: ["powershell", "sqlserver"]
 ---
 
 A PowerShell script to change the SQL authentication mode and a DevTest Labs artifact built upon it.

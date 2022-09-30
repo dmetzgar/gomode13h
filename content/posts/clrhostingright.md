@@ -1,7 +1,7 @@
 ---
 title: "Hosting the CLR the Right Way"
 date: 2015-06-03
-tags: ["Native"]
+tags: ["nativecode"]
 ---
 
 The previous post covered the easy way to host the CLR in a native process by using a 

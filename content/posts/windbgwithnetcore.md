@@ -1,7 +1,7 @@
 ---
 title: "Using WinDBG with .NET Core 3"
 date: 2020-07-29
-tags: ["WinDBG","Debug", ".NET Core"]
+tags: ["debug", "dotnetcore"]
 ---
 
 How to use WinDBG with .NET Core 3

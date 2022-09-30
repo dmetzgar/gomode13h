@@ -1,7 +1,7 @@
 ---
 title: "Why choose .NET Core?"
 date: 2016-09-28
-tags: [".NET Core"]
+tags: ["dotnetcore"]
 ---
 
 *An excerpt from my new book: [.NET Core in Action](https://manning.com/books/dotnet-core-in-action)*

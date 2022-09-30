@@ -1,7 +1,7 @@
 ---
 title: "Cadence Java Samples on Windows"
 date: 2019-02-12
-tags: ["Cadence","Workflow"]
+tags: ["cadence","workflow"]
 ---
 
 This post covers how to run the Cadence Java sample workflows on Windows. 

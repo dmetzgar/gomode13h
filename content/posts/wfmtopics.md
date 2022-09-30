@@ -1,7 +1,7 @@
 ---
 title: "Workflow Manager Internals - Topics"
 date: 2018-06-14
-tags: ["Workflow", "Workflow Manager", "Service Bus"]
+tags: ["workflow","servicebus"]
 ---
 
 In this post, I'll explain how [Workflow Manager](https://msdn.microsoft.com/library/jj193528.aspx) handles messages through Service Bus topics.
