@@ -76,6 +76,4 @@ function Install-Packages
 The config file is passed to the Visual Studio installer via the `--config` option. But this needs
 to be wrapped in `--package-parameters` so Chocolatey will send it to the installer.
 
-The full file is in this Gist for convenience:
-
-{{< gist dmetzgar 0d4f9ea93dacf11fe9d545f7e94748a7 >}}
+The full file is in this Gist for convenience: https://gist.github.com/dmetzgar/0d4f9ea93dacf11fe9d545f7e94748a7

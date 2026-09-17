@@ -6,7 +6,7 @@ tags: ["performance"]
 
 [WCAT](http://www.iis.net/downloads/community/2007/05/wcat-63-%28x64%29) is a powerful, lightweight, 
 and free tool for generating HTTP load. Here I will show you how to use it to simulate user traffic 
-watching media content served by Azure Media Services.</p>
+watching media content served by Azure Media Services.
 
 <!--more-->
 

@@ -13,7 +13,7 @@
   <section class="article-more">
     <ul>
       {{ range ($section) }}
-        <li><time itemprop="datePublished" datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006-01-02" }}</time> - <a href="{{ .URL }}">{{ .Title }}</a></li>
+        <li><time itemprop="datePublished" datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006-01-02" }}</time> - <a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
       {{ end }}
     </ul>
   </section>

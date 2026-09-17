@@ -25,7 +25,7 @@
     {{/* Now, range through the next four after the initial $n_posts items. Nest the requirements, "after" then "first" on the outside */}}
     {{ range (first 8 (after $n_posts $section))  }}
       <h2>
-        <a href="{{ .URL }}">
+        <a href="{{ .RelPermalink }}">
           {{ .Title }}
         </a>
       </h2>

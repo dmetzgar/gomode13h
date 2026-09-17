@@ -79,16 +79,22 @@ body {
   margin: 0;
   background-color: #2d2d2d;
   color: #f2f0ec;
-  line-height: 1.5;
-  /* font-size: 100%; */
-  font-size: 1.3em;
+  /* line-height: 1.5; */
+  font-size: 1.2em;
   font-family: "Roboto Slab","ff-tisa-web-pro","Georgia",Arial,sans-serif;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
 }
 
 .container {
-  max-width: 100%;
+  max-width: 70em;
   margin-left: 1em;
   margin-right: 1em;
+  width: stretch;
+  align-self: center;
 }
 
 div.right {
@@ -127,6 +133,7 @@ header, footer {
   background-color: #393939;
   padding-top: 1rem;
   padding-bottom: 1rem;
+  width: stretch;
 }
 
 header {
@@ -172,7 +179,7 @@ p {
   margin-bottom: 1rem;
 }
 
-h1 { font-size: 2rem }
+h1 { font-size: 1.9rem }
 h2 { font-size: 1.5rem }
 h3 { font-size: 1.25rem }
 h4 { font-size: 1rem }
@@ -205,23 +212,23 @@ footer a {
 
 .page-not-found h1 {
   text-align: center;
-  font-size: 5em;
+  font-size: 3em;
 }
 
 .page-not-found h2 {
   text-align: center;
-  font-size: 3em;
+  font-size: 2.1em;
   color: #a09f93;
   margin-bottom: 4rem;
 }
 
 @media (max-width: 52em) {
   .page-not-found h1 {
-    font-size: 3em;
+    font-size: 2.1em;
   }
 
   .page-not-found h2 {
-    font-size: 2em;
+    font-size: 1.9em;
   }
 }
 
@@ -241,12 +248,12 @@ footer a {
 
 @media (max-width: 52em) {
   .homepage h1.site-title {
-    font-size: 3em;
+    font-size: 2.1em;
   }
 }
 
 .homepage h1.headline {
-  font-size: 3em;
+  font-size: 2.1em;
   color: #ffcc66;
 }
 
@@ -281,7 +288,7 @@ footer a {
 /* Post List Layout */
 
 .article-list h1.list-title {
-  font-size: 3em;
+  font-size: 2.1em;
   color: #ffcc66;
 }
 
@@ -341,7 +348,7 @@ article.single .meta .val, article.single .meta .val a {
 
 article.single h1.headline {
   margin-top: 0;
-  font-size: 3em;
+  font-size: 2.1em;
   color: #ffcc66;
 }
 
@@ -355,6 +362,7 @@ article.single h1.headline {
 article.single section.body {
   padding-top: 4rem;
   padding-bottom: 3rem;
+  align-content: center;
 }
 
 @media (max-width: 52em) {
