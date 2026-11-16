@@ -1,0 +1,21 @@
+{{/* Table of the confirmed games in data/games.yaml, oldest first. Unconfirmed candidates stay hidden. */}}
+{{ $games := where hugo.Data.games "confirmed" true }}
+{{ if $games }}
+<table class="games">
+  <thead>
+    <tr><th>Game</th><th>Year</th><th>Developer</th><th>Where to find it</th></tr>
+  </thead>
+  <tbody>
+    {{ range sort $games "year" }}
+    <tr>
+      <td>{{ .title }}{{ with .notes }}<br><small>{{ . | markdownify }}</small>{{ end }}</td>
+      <td>{{ .year }}</td>
+      <td>{{ .developer }}</td>
+      <td>{{ range $i, $l := .links }}{{ if $i }}, {{ end }}<a href="{{ $l.url }}">{{ $l.name }}</a>{{ end }}</td>
+    </tr>
+    {{ end }}
+  </tbody>
+</table>
+{{ else }}
+<p><em>Nothing confirmed yet.</em></p>
+{{ end }}

@@ -1,0 +1,4 @@
+{{/* Give each post a colour from the default VGA palette (indexes 38h-4Fh, the mid-saturation hue ring). */}}
+{{ $hues := slice "#7d7dff" "#9e7dff" "#be7dff" "#df7dff" "#ff7dff" "#ff7ddf" "#ff7dbe" "#ff7d9e" "#ff7d7d" "#ff9e7d" "#ffbe7d" "#ffdf7d" "#ffff7d" "#dfff7d" "#beff7d" "#9eff7d" "#7dff7d" "#7dff9e" "#7dffbe" "#7dffdf" "#7dffff" "#7ddfff" "#7dbeff" "#7d9eff" }}
+{{ $i := mod (add .Date.YearDay (len .Title)) 24 }}
+{{ return (dict "color" (index $hues $i) "index" (printf "%02Xh" (add 56 $i))) }}

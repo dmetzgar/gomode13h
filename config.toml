@@ -1,8 +1,35 @@
 baseURL = "http://mode19.net/"
 languageCode = "en-us"
 title = "Mode 13h"
-theme = "base16"
+copyright = "Dustin Metzgar"
+theme = "mode13h"
 disqusShortName = "mode13h"
+
+[params]
+  # Look of the mode13h theme: copper | turboc | vga | turbo
+  variant = "copper"
+  # Big title block on the home page (the vga variant draws its fire effect there).
+  # The introduction panel is separate: it shows whatever is in content/_index.md.
+  hero = false
+
+# The menu bar. Permanent pages add themselves with `menu: main` in their front matter.
+[menus]
+  [[menus.main]]
+    name = "Home"
+    pageRef = "/"
+    weight = 10
+  [[menus.main]]
+    name = "Posts"
+    pageRef = "/allposts"
+    weight = 20
+  [[menus.main]]
+    name = "Tags"
+    pageRef = "/tags"
+    weight = 80
+  [[menus.main]]
+    name = "Feed"
+    url = "/index.xml"
+    weight = 90
 
 # Source code settings
 # PygmentsCodeFences = true

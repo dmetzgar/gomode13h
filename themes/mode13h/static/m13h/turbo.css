@@ -1,0 +1,236 @@
+/*
+ * turbo -- "Turbo Vision"
+ * The whole page is the Borland IDE: 16 colours, the 9x16 VGA text font, a
+ * stippled desktop, posts in blue editor windows, lists in grey dialogs.
+ *
+ * The menu bar and status line are shared with the "turboc" variant.
+ */
+
+html:is([data-theme="turbo"], [data-theme="turboc"]) {
+  .menubar, .statusbar {
+    position: sticky;
+    z-index: 10;
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0 1ch;
+    font: 16px/1.5 "VGA", monospace;
+    color: #000;
+    background: #aaa;
+  }
+
+  .menubar { top: 0; }
+  .statusbar { bottom: 0; }
+
+  .menubar a, .statusbar a { padding: 0 1ch; text-decoration: none; color: #000; }
+  .menubar a:hover, .menubar a:focus-visible, .statusbar a:hover, .statusbar a:focus-visible { background: #00aa00; outline: 0; }
+  .menubar u { text-decoration: none; color: #aa0000; }
+  .statusbar b { font-weight: normal; color: #aa0000; }
+  .menu-sys { display: block; }
+  .menubar .menu-brand { order: 9; margin-left: auto; }
+  .statusbar .copyright { margin-left: auto; padding: 0 1ch; }
+  .statusbar .copyright a { padding: 0; text-decoration: underline; }
+
+  @media (max-width: 40em) {
+    .statusbar .copyright { display: none; }
+  }
+}
+
+html[data-theme="turbo"] {
+  --u: 20px;                           /* text size; one character row is 1.25 of these */
+  --row: calc(var(--u) * 1.25);
+  --line: calc(var(--u) * 3 / 16);     /* a double box-drawing line, three font pixels thick */
+  --page-width: 64rem;
+
+  --c-comment: #aaa;
+  --c-pre: #55ff55;
+  --c-kw: #fff;
+  --c-type: #fff;
+  --c-str: #55ffff;
+  --c-num: #55ffff;
+  --c-fn: #ffff55;
+  --c-attr: #ffff55;
+  --c-punct: #ffff55;
+  --c-lnum: #555;
+  --c-hl: #0000aa;
+  --lang-label: block;
+
+  background: #aaa;
+
+  body {
+    /* The desktop: ░ in blue on light grey, like TDeskTop's default background. */
+    background: #aaa url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 2' shape-rendering='crispEdges'%3E%3Cpath fill='%230000aa' d='M0 0h1v1H0zM2 1h1v1H2z'/%3E%3C/svg%3E") 0 0 / 5px 2.5px;
+    color: #fff;
+    font: var(--u) / 1.25 "VGA", monospace;
+  }
+
+  ::selection { background: #aaa; color: #0000aa; }
+
+  h1, h2, h3, h4, h5, h6, strong, b, em { font: inherit; }
+
+  .page { padding-top: var(--row); padding-bottom: var(--row); }
+
+  /* Windows */
+
+  .window {
+    position: relative;
+    margin: 0 2ch calc(var(--row) * 2) 0;
+    padding: calc(var(--row) * 1.5) 3ch;
+    background: #0000aa;
+    box-shadow: 2ch var(--row) 0 rgba(0, 0, 0, .55);
+  }
+
+  /* The frame runs through the middle of the outermost character cells. */
+  .window::before {
+    content: "";
+    position: absolute;
+    inset: calc(var(--row) / 2 - var(--line) / 2) calc(1ch - var(--line) / 2);
+    border: var(--line) double #fff;
+    pointer-events: none;
+  }
+
+  .window-bar {
+    position: absolute;
+    top: 0;
+    left: 3ch;
+    right: 3ch;
+    display: flex;
+    gap: 1ch;
+    line-height: var(--row);
+    white-space: nowrap;
+  }
+
+  .window-bar > * { padding: 0 .5ch; background: #0000aa; }
+  .window-bar b { color: #55ff55; }
+  .window-title { margin: 0 auto; overflow: hidden; text-overflow: ellipsis; }
+  .t-name { display: none; }
+  .t-file { display: inline; }
+
+  .window--dialog { color: #000; background: #aaa; }
+  .window--dialog .window-bar > * { color: #fff; background: #aaa; }
+  .window--dialog .window-num, .window--dialog .window-zoom,
+  .window--error .window-num, .window--error .window-zoom { visibility: hidden; }
+
+  .window--error { max-width: 44ch; margin: calc(var(--row) * 3) auto; text-align: center; background: #aa0000; }
+  .window--error .window-bar > * { background: #aa0000; }
+  .not-found h1 { margin: 0; color: #ffff55; }
+  .not-found p { margin: 0 0 var(--row); }
+
+  /* TButton: green, with the half-cell shadow. */
+  .btn {
+    display: inline-block;
+    padding: 0 3ch;
+    text-decoration: none;
+    color: #000;
+    background: #00aa00;
+    box-shadow: 1ch calc(var(--row) / 2) 0 #000;
+  }
+
+  .btn:hover, .btn:focus-visible { color: #fff; outline: 0; }
+  .actions { margin: var(--row) 0 0; text-align: center; }
+
+  /* About box */
+
+  .hero { max-width: 46ch; margin: var(--row) auto calc(var(--row) * 2); text-align: center; }
+  .hero .logo { margin: 0 0 var(--row); }
+  .hero .tagline { margin: 0 0 var(--row); }
+  .hero .incant { display: block; margin: 0 0 var(--row); }
+  .hero .incant span { display: block; }
+  .hero .hero-text .btn.hero-ok { display: inline-block; }
+
+  /* Post list: read like source, with the date as a comment. */
+
+  .post-item { margin-bottom: calc(var(--row) * 2); }
+  .post-item:last-child { margin-bottom: 0; }
+  .post-item-meta { color: #aaa; }
+  .post-item-meta::before { content: "/* "; }
+  .post-item-meta::after { content: " */"; }
+  .file { display: inline; margin-left: 2ch; }
+  .post-item h2 { margin: 0; color: #ffff55; }
+  .post-item h2 a { text-decoration: none; }
+  .post-item h2 a:hover, .post-item h2 a:focus-visible { color: #0000aa; background: #aaa; outline: 0; }
+  .post-item .summary { padding-left: 4ch; }
+  .post-item .summary p { margin: 0; }
+  .post-item .more { margin-left: 4ch; color: #55ff55; }
+
+  /* TListBox */
+
+  .file-list { color: #000; background: #00aaaa; }
+  .file-list a { padding: 0 1ch; color: #000; }
+  .file-list a:hover, .file-list a:focus-visible { color: #fff; background: #00aa00; outline: 0; }
+  .file-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  .list-title { margin: 0 0 var(--row); color: #ffff55; }
+  .window--dialog .list-title { display: none; }
+  .year { margin: var(--row) 0 0; }
+  .year:first-of-type { margin-top: 0; }
+
+  .term-list { columns: 3 16ch; }
+  .tag { color: #55ffff; text-decoration: none; }
+  .tag:hover, .tag:focus-visible { color: #000; background: #00aaaa; outline: 0; }
+  .count { color: #aaa; }
+
+  /* Article: FILENAME.MD open in the editor. */
+
+  .post-header { margin-bottom: calc(var(--row) * 2); }
+  .post-header h1 { margin: 0 0 var(--row); color: #ffff55; }
+  .post-header h1::before { content: "# "; color: #aaa; }
+  .post-meta { color: #aaa; }
+  .post-meta .tags { margin-left: 2ch; gap: 0 1ch; }
+  .post-meta .tag::before { content: "#"; }
+
+  .prose p, .prose ul, .prose ol, .prose blockquote, .prose table, .prose figure { margin: 0 0 var(--row); }
+  .prose ul, .prose ol { padding-left: 4ch; }
+  .prose li > p { margin: 0; }
+  .prose a { color: #55ff55; }
+  .prose a:hover { color: #000; background: #00aaaa; text-decoration: none; }
+
+  /* Text mode has no bold or italic, only brighter colours. */
+  .prose strong, .prose b { color: #ffff55; }
+  .prose em { color: #55ffff; }
+
+  .prose h1, .prose h2, .prose h3, .prose h4 { margin: calc(var(--row) * 2) 0 var(--row); color: #ffff55; }
+  .prose h1::before { content: "# "; color: #aaa; }
+  .prose h2::before { content: "## "; color: #aaa; }
+  .prose h3::before { content: "### "; color: #aaa; }
+
+  .prose :not(pre) > code { font: inherit; color: #ffff55; }
+  .prose blockquote { padding-left: 2ch; border-left: 1ch solid #00aaaa; color: #55ffff; }
+  .prose hr { height: var(--line); margin: var(--row) 0; border: 0; border-top: var(--line) double #fff; }
+  .prose img { border: 1px solid #aaa; }
+  .prose th { color: #ffff55; border-bottom: 1px solid #fff; }
+
+  /* Code: a black output window. Smaller text so more of each line fits. */
+  .highlight, .prose > pre {
+    margin: 0 0 var(--row);
+    padding: 20px 2ch;
+    font: 16px/1.25 "VGA", monospace;
+    color: #ffff55;
+    background: #000;
+    border: 1px solid #aaa;
+  }
+
+  .highlight code[data-lang]::before {
+    top: -1px;
+    right: 2ch;
+    padding: 0 1ch;
+    line-height: 1;
+    transform: translateY(-50%);
+    text-transform: uppercase;
+    color: #aaa;
+    background: #000;
+  }
+
+  .comments { background: #000; }
+  .comments .window-bar > * { background: #000; }
+
+  @media (max-width: 48em) {
+    --u: 16px;
+
+    .page { padding-left: .5rem; padding-right: .5rem; }
+    .window { margin-right: 1ch; padding-left: 2.5ch; padding-right: 2.5ch; box-shadow: 1ch calc(var(--row) / 2) 0 rgba(0, 0, 0, .55); }
+    .window-bar { left: 2ch; right: 2ch; }
+    .window-num { display: none; }
+    .post-item .summary, .post-item .more { padding-left: 0; margin-left: 0; }
+    .file { display: none; }
+  }
+}

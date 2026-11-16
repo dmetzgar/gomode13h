@@ -1,0 +1,44 @@
+{{ define "main" }}
+{{ $posts := where site.RegularPages "Section" "in" site.MainSections }}
+{{ $n := $.Param "recent_posts_number" | default 7 }}
+
+{{ if site.Params.hero }}
+<section class="hero window window--dialog">
+  {{ partial "m13h/window-bar.html" (dict "name" "About") }}
+  <canvas class="fx" width="320" height="100" aria-hidden="true"></canvas>
+  <div class="hero-text">
+    <h1 class="logo">{{ partial "m13h/logo.html" . }}</h1>
+    <p class="tagline">or mode 19 in decimal</p>
+    <p class="incant"><span>mov ax, 0013h</span> <span>int 10h</span></p>
+    <a class="btn hero-ok" href="#recent">OK</a>
+  </div>
+  <p class="fx-caption" aria-hidden="true"><span>320&times;200 &middot; 256 colors &middot; A000:0000</span><button type="button" class="fx-next">next effect &rarr;</button></p>
+</section>
+{{ end }}
+
+{{ with .Content }}
+<section class="window intro">
+  {{ partial "m13h/window-bar.html" (dict "name" "About" "file" "README.MD") }}
+  <div class="window-body prose">{{ . }}</div>
+</section>
+{{ end }}
+
+<section class="window post-list" id="recent">
+  {{ partial "m13h/window-bar.html" (dict "name" "Recent posts" "file" "RECENT.MD") }}
+  <div class="window-body">
+    {{ range first $n $posts }}
+      {{ partial "m13h/post-item.html" . }}
+    {{ end }}
+  </div>
+</section>
+
+{{ if gt (len $posts) $n }}
+<section class="window window--dialog more-posts">
+  {{ partial "m13h/window-bar.html" (dict "name" "More posts" "file" "Open a File") }}
+  <div class="window-body">
+    {{ partial "m13h/file-list.html" (first 8 (after $n $posts)) }}
+    <p class="actions"><a class="btn" href="{{ "allposts/" | relURL }}">All posts</a></p>
+  </div>
+</section>
+{{ end }}
+{{ end }}

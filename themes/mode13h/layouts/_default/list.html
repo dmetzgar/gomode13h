@@ -1,0 +1,19 @@
+{{ define "main" }}
+<section class="window post-list">
+  {{ partial "m13h/window-bar.html" (dict "name" .Title "file" (printf "%s.DIR" (substr (upper .Title) 0 8))) }}
+  <div class="window-body">
+    <h1 class="list-title">{{ .Title }}</h1>
+    {{ if eq .Kind "taxonomy" }}
+    <ul class="term-list">
+      {{ range .Data.Terms.Alphabetical }}
+      <li><a class="tag" href="{{ .Page.RelPermalink }}">{{ .Page.LinkTitle | lower }}</a> <span class="count">{{ .Count }}</span></li>
+      {{ end }}
+    </ul>
+    {{ else }}
+      {{ range .Pages }}
+        {{ partial "m13h/post-item.html" . }}
+      {{ end }}
+    {{ end }}
+  </div>
+</section>
+{{ end }}

@@ -1,0 +1,264 @@
+/*
+ * copper -- "Shareware title screen"
+ * The 256-colour game look: a banded, dithered gradient sky (built at 160x100 by
+ * m13h.js and stretched), bevelled steel panels, and 8x8 display text with a
+ * hard-stepped gradient fill.
+ */
+
+html[data-theme="copper"] {
+  --panel: #1c2034;
+  --panel-hi: #5d6dae;
+  --panel-lo: #0a0c18;
+  --text: #dfdfe7;
+  --dim: #9a9ebc;
+  --gold: #ffdf7d;
+  --cyan: #7dffff;
+  --px: 2px;
+
+  --c-comment: #828aa2;
+  --c-pre: #ff9e7d;
+  --c-kw: #7dffff;
+  --c-type: #ffdf7d;
+  --c-str: #beff7d;
+  --c-num: #ff7ddf;
+  --c-fn: #7dbeff;
+  --c-attr: #ffbe7d;
+  --c-punct: #aab;
+  --c-lnum: #4a5070;
+  --c-hl: #1c2034;
+  --lang-label: block;
+
+  background: #08084a;
+  color-scheme: dark;
+
+  body {
+    background: transparent;
+    color: var(--text);
+    font: 17px/1.65 "IBM Plex Sans", system-ui, sans-serif;
+  }
+
+  ::selection { background: var(--gold); color: #000; }
+
+  .backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background-color: #08084a;
+    background-image: var(--sky, linear-gradient(#000014, #080848 35%, #301470 60%, #782470 80%, #c84c54 93%, #f09650));
+    background-size: 100% 100%;
+    image-rendering: pixelated;
+  }
+
+  .ide { display: none; }
+
+  .page { padding-top: 1.5rem; }
+
+  a { color: var(--cyan); text-underline-offset: .2em; text-decoration-thickness: 1px; }
+  a:hover { color: #fff; }
+
+  /* Bevelled pieces */
+
+  .window, .menubar a:not(.menu-brand), .btn, .tag {
+    border: var(--px) solid;
+    border-color: var(--panel-hi) var(--panel-lo) var(--panel-lo) var(--panel-hi);
+    background: var(--panel);
+  }
+
+  /* Gradient-filled 8x8 lettering */
+
+  .menu-brand, .hero .logo, .post-header h1, .list-title, .not-found h1 {
+    font-family: "BIOS", monospace;
+    font-weight: normal;
+    line-height: 1.5;
+    color: var(--gold);
+    background: linear-gradient(#ffffbe 0 34%, #ffdf00 34% 50%, #ff9e00 50% 66%, #ff5500 66%) 0 0 / 100% 1lh;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(var(--px) var(--px) 0 #000);
+  }
+
+  /* Menu */
+
+  .menubar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    max-width: 52rem;
+    margin: 0 auto;
+    padding: 20px 1rem 0;
+    font: 8px/1 "BIOS", monospace;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .menubar a { padding: 10px 12px; text-decoration: none; color: var(--text); }
+  .menubar a:hover { color: var(--gold); }
+  .menubar a:active { border-color: var(--panel-lo) var(--panel-hi) var(--panel-hi) var(--panel-lo); }
+  .menubar u { text-decoration: none; color: var(--gold); }
+  .menubar .menu-brand { margin-right: auto; padding: 0; font-size: 16px; letter-spacing: 0; text-transform: none; }
+
+  /* Title screen */
+
+  .hero.window {
+    margin: 2rem 0 2.5rem;
+    padding: 3.5rem 1rem 3rem;
+    text-align: center;
+    border: 0;
+    background: none;
+    box-shadow: none;
+  }
+
+  .hero .logo { display: inline-block; margin: 0; font-size: clamp(32px, 9.5vw, 80px); }
+  .hero .tagline { margin: 1.25rem 0 0; font: 16px/1.5 "BIOS", monospace; color: var(--cyan); text-shadow: var(--px) var(--px) 0 #000; }
+
+  .hero .incant {
+    display: inline-block;
+    margin: 1.75rem 0 0;
+    padding: 8px 12px;
+    font: 8px/1 "BIOS", monospace;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #000;
+    background: var(--gold);
+    box-shadow: var(--px) var(--px) 0 #000;
+  }
+
+  .hero .incant span + span::before { content: "\00B7  "; }
+
+  /* Panels */
+
+  .window {
+    margin: 0 0 3rem;
+    padding: 0 2.5rem 2.5rem;
+    box-shadow: 0 0 0 var(--px) #000, 10px 10px 0 var(--px) rgba(0, 0, 0, .45);
+  }
+
+  .window-bar {
+    display: block;
+    margin: 0 -2.5rem 2.25rem;
+    padding: 10px 14px;
+    font: 8px/1 "BIOS", monospace;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #fff;
+    text-shadow: 1px 1px 0 #000;
+    background: linear-gradient(#5d7dff 0 25%, #3c5cdf 25% 50%, #2040be 50% 75%, #10289e 75%);
+    border-bottom: var(--px) solid var(--panel-lo);
+  }
+
+  .window-bar > :not(.window-title) { display: none; }
+  .window-bar .t-name { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .hero > .window-bar { display: none; }
+
+  /* Post list */
+
+  .post-item { margin-bottom: 2.5rem; }
+  .post-item:last-of-type { margin-bottom: 0; }
+  .post-item time, .post-meta time, .file-list time { font: 8px/1 "BIOS", monospace; letter-spacing: 1px; text-transform: uppercase; color: var(--dim); }
+  .post-item h2 { margin: 8px 0; font-size: 1.4rem; font-weight: 600; line-height: 1.3; }
+  .post-item h2 a { color: var(--gold); text-decoration: none; }
+  .post-item h2 a:hover { color: #fff; }
+  .post-item .summary p { margin: 0 0 .5rem; }
+  .post-item .more { font: 8px/1 "BIOS", monospace; letter-spacing: 1px; text-transform: uppercase; text-decoration: none; }
+  .post-item .more::after { content: " \25BA"; }
+
+  .file-list li { border-bottom: var(--px) solid var(--panel-lo); box-shadow: 0 1px 0 #2c3252; }
+  .file-list a { padding: 10px 0; color: var(--text); }
+  .file-list a:hover { color: var(--gold); }
+  .file-list time { line-height: 3.2; }
+
+  .btn {
+    display: inline-block;
+    margin-top: 1.75rem;
+    padding: 12px 16px;
+    font: 8px/1 "BIOS", monospace;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--gold);
+    background: #2c3252;
+  }
+
+  .btn:hover { color: #fff; }
+  .btn:active { border-color: var(--panel-lo) var(--panel-hi) var(--panel-hi) var(--panel-lo); }
+
+  .list-title, .not-found h1 { margin: 0 0 2rem; font-size: 24px; }
+  .year { margin: 2.25rem 0 .5rem; font: 16px/1 "BIOS", monospace; color: var(--cyan); }
+
+  .term-list { display: flex; flex-wrap: wrap; gap: 12px 20px; }
+  .tag { padding: 4px 8px; font: .85rem/1 "IBM Plex Mono", monospace; text-decoration: none; color: var(--text); background: #2c3252; }
+  .tag:hover { color: var(--gold); }
+  .count { color: var(--dim); font-size: .85em; }
+
+  /* Article */
+
+  .post-header { margin-bottom: 2.25rem; padding-bottom: 1.5rem; border-bottom: var(--px) solid var(--panel-lo); box-shadow: 0 1px 0 #2c3252; }
+  .post-header h1 { margin: 0 0 1rem; font-size: 24px; }
+  .post-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; }
+
+  .prose p, .prose ul, .prose ol { margin: 0 0 1.25em; }
+  .prose strong { color: #fff; }
+  .prose h1, .prose h2, .prose h3 { margin: 2.5em 0 1em; font: 16px/1.5 "BIOS", monospace; text-shadow: var(--px) var(--px) 0 #000; }
+  .prose h1 { color: var(--gold); }
+  .prose h2 { color: var(--cyan); }
+  .prose h3 { color: #ff9eff; font-size: 8px; letter-spacing: 1px; text-transform: uppercase; text-shadow: 1px 1px 0 #000; }
+
+  .prose :not(pre) > code { font: .88em "IBM Plex Mono", monospace; padding: .1em .35em; color: var(--gold); background: var(--panel-lo); }
+  .prose blockquote { margin: 0 0 1.25em; padding-left: 1.25rem; border-left: 4px solid var(--cyan); color: var(--dim); }
+  .prose hr { border: 0; border-top: var(--px) solid var(--panel-lo); box-shadow: 0 1px 0 #2c3252; margin: 2.5em 0; }
+  .prose th { color: #fff; border-bottom: var(--px) solid var(--panel-hi); }
+  .prose td { border-bottom: 1px solid #2c3252; }
+
+  /* Code sits in a recess: the bevel, inverted. */
+  .highlight, .prose > pre {
+    padding: 1.6rem 1.25rem 1.25rem;
+    font: 14.5px/1.55 "IBM Plex Mono", ui-monospace, monospace;
+    color: var(--text);
+    background: #05060e;
+    border: var(--px) solid;
+    border-color: var(--panel-lo) var(--panel-hi) var(--panel-hi) var(--panel-lo);
+  }
+
+  .highlight code[data-lang]::before {
+    padding: 5px 8px;
+    font: 8px/1 "BIOS", monospace;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--dim);
+  }
+
+  /* Footer */
+
+  .statusbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 24px;
+    width: 100%;
+    max-width: 52rem;
+    margin: 0 auto;
+    padding: 12px 1rem 28px;
+    font: 8px/1.5 "BIOS", monospace;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #fff;
+    text-shadow: 1px 1px 0 #000;
+  }
+
+  .statusbar a { color: #fff; text-decoration: none; }
+  .statusbar a:hover { color: var(--gold); }
+  .statusbar b { display: none; }
+  .statusbar .copyright { margin-left: auto; }
+
+  @media (max-width: 40em) {
+    body { font-size: 16px; }
+    .window { padding: 0 1.25rem 1.75rem; box-shadow: 0 0 0 var(--px) #000; }
+    .window-bar { margin: 0 -1.25rem 1.5rem; }
+    .post-header h1, .list-title { font-size: 16px; }
+    .highlight, .prose > pre { margin-left: -1.25rem; margin-right: -1.25rem; font-size: 13px; border-left: 0; border-right: 0; }
+    .statusbar .copyright { margin-left: 0; }
+  }
+}

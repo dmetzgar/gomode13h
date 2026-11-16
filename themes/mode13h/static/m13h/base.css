@@ -1,0 +1,139 @@
+/*
+ * Shared structure for every variant. Each variant lives in its own file and is
+ * scoped to html[data-theme="..."]; this file only holds what they all agree on.
+ *
+ * Fonts: "VGA" (9x16 text-mode font) and "BIOS" (the 8x8 font mode 13h uses) are
+ * from The Ultimate Oldschool PC Font Pack by VileR (int10h.org), CC BY-SA 4.0.
+ */
+
+@font-face {
+  font-family: "VGA";
+  src: url(fonts/WebPlus_IBM_VGA_9x16.woff) format("woff");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "BIOS";
+  src: url(fonts/WebPlus_IBM_BIOS.woff) format("woff");
+  font-display: swap;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.page {
+  flex: 1;
+  width: 100%;
+  max-width: var(--page-width, 52rem);
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+a { color: inherit; }
+img { max-width: 100%; height: auto; }
+h1, h2, h3, h4, h5, h6 { line-height: 1.25; }
+
+/* Pieces that only some variants use. */
+.backdrop, .palstrip, .window-bar, .menu-sys, .t-file, .swatch, .file,
+.fx, .fx-caption, .incant, .hero .hero-text .btn.hero-ok { display: none; }
+
+.fx-next { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+
+.file-list, .term-list { list-style: none; margin: 0; padding: 0; }
+.file-list a { display: flex; gap: 2ch; justify-content: space-between; text-decoration: none; }
+.file-list time { flex: none; }
+
+.post-meta .tags { display: inline-flex; flex-wrap: wrap; gap: .5em; }
+
+/* Article content */
+
+.prose > :first-child { margin-top: 0; }
+.prose > :last-child { margin-bottom: 0; }
+.prose img { display: block; }
+.prose figure { margin: 1.5em 0; }
+.prose table { display: block; max-width: 100%; overflow-x: auto; border-collapse: collapse; }
+.prose th, .prose td { padding: .25em 1ch; text-align: left; vertical-align: top; }
+.prose pre { overflow-x: auto; margin: 0 0 1.5em; }
+.prose li > p { margin-bottom: .5em; }
+
+/* Chroma: the site config turns on table line numbers, so blocks come as a two-cell table. */
+
+.highlight { position: relative; margin: 0 0 1.5em; }
+.highlight > .chroma { overflow-x: auto; }
+.highlight pre, .highlight code, .prose pre code { font: inherit; }
+.highlight pre { margin: 0; padding: 0; border: 0; background: none; overflow: visible; }
+.highlight .lntable { border-spacing: 0; display: table; width: 100%; }
+.highlight .lntd { padding: 0; vertical-align: top; }
+.highlight .lntd:first-child { width: 1%; padding-right: 2ch; text-align: right; user-select: none; }
+.highlight .lnt { color: var(--c-lnum); }
+.highlight .hl { display: block; background: var(--c-hl, transparent); }
+
+/* Language label, taken from the code element's data-lang. */
+.highlight code[data-lang]::before {
+  content: attr(data-lang);
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: var(--lang-label, none);
+}
+
+.chroma .c, .chroma .ch, .chroma .cm, .chroma .c1, .chroma .cs, .chroma .sd { color: var(--c-comment); }
+.chroma .cp, .chroma .cpf { color: var(--c-pre); }
+.chroma .k, .chroma .kc, .chroma .kd, .chroma .kn, .chroma .kp, .chroma .kr, .chroma .ow { color: var(--c-kw); }
+.chroma .kt, .chroma .nc, .chroma .nn, .chroma .nb { color: var(--c-type); }
+.chroma .s, .chroma .sa, .chroma .sb, .chroma .sc, .chroma .dl, .chroma .s2, .chroma .se, .chroma .sh,
+.chroma .si, .chroma .sx, .chroma .sr, .chroma .s1, .chroma .ss { color: var(--c-str); }
+.chroma .m, .chroma .mb, .chroma .mf, .chroma .mh, .chroma .mi, .chroma .il, .chroma .mo, .chroma .l { color: var(--c-num); }
+.chroma .nf, .chroma .fm, .chroma .nd { color: var(--c-fn); }
+.chroma .na, .chroma .nt, .chroma .nv, .chroma .vc, .chroma .vg, .chroma .vi { color: var(--c-attr); }
+.chroma .o, .chroma .p { color: var(--c-punct); }
+.chroma .gd { color: var(--c-del, inherit); }
+.chroma .gi { color: var(--c-ins, inherit); }
+
+/* Preview-only variant picker (injected by m13h.js under `hugo server`). */
+
+.variant-picker {
+  position: fixed;
+  right: 12px;
+  bottom: 44px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 8px;
+  font: 12px/1 system-ui, sans-serif;
+  color: #ddd;
+  background: rgba(16, 16, 16, .92);
+  border: 1px solid #555;
+  border-radius: 6px;
+}
+
+.variant-picker span { margin-right: 4px; color: #999; }
+
+.variant-picker button {
+  font: inherit;
+  padding: 5px 8px;
+  color: #ddd;
+  background: #2a2a2a;
+  border: 1px solid #555;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.variant-picker button[aria-pressed="true"] { color: #000; background: #ffdf7d; border-color: #ffdf7d; }
+
+@media (max-width: 40em) {
+  .variant-picker { left: 12px; justify-content: center; }
+}
+
+/* Keep prose table styling off the line-number table. */
+.prose .highlight table.lntable { margin: 0; }
+.prose .highlight td.lntd { border: 0; }

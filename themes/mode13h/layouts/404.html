@@ -1,0 +1,10 @@
+{{ define "main" }}
+<section class="window window--error not-found">
+  {{ partial "m13h/window-bar.html" (dict "name" "Error") }}
+  <div class="window-body">
+    <h1>404</h1>
+    <p>File not found.</p>
+    <p class="actions"><a class="btn" href="{{ "/" | relURL }}">OK</a></p>
+  </div>
+</section>
+{{ end }}

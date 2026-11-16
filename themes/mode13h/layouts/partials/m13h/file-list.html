@@ -1,0 +1,6 @@
+{{/* Compact list of posts: title on the left, date on the right. */}}
+<ul class="file-list">
+  {{ range . }}
+  <li><a href="{{ .RelPermalink }}"><span class="file-title">{{ .Title }}</span><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006-01-02" }}</time></a></li>
+  {{ end }}
+</ul>

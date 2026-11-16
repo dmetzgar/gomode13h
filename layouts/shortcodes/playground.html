@@ -1,0 +1,29 @@
+{{/*
+  The mode 13h playground: an 8086 and a VGA in the browser. Engine and examples are in static/playground.
+  Optional: example="file.asm" starts with that program from static/playground/examples.
+*/}}
+<div class="pg" data-base="{{ "playground/" | relURL }}"{{ with .Get "example" }} data-example="{{ . }}"{{ end }}>
+  <div class="pg-screens">
+    <canvas class="pg-canvas" width="320" height="200" tabindex="0" aria-label="Mode 13h screen"></canvas>
+    <canvas class="pg-back" width="320" height="200" hidden aria-label="Back buffer"></canvas>
+  </div>
+  <div class="pg-status" role="status">Loading…</div>
+  <div class="pg-bar">
+    <button type="button" class="pg-run" title="Assemble and run (Ctrl+Enter)">Run</button>
+    <button type="button" class="pg-pause">Pause</button>
+    <label>Example <select class="pg-example"></select></label>
+    <label>Refresh <select class="pg-refresh"><option value="60">60 Hz</option><option value="70">70 Hz</option></select></label>
+    <label><input type="checkbox" class="pg-showback"> Show back buffer</label>
+  </div>
+  <div class="pg-tabs" role="tablist">
+    <button type="button" role="tab" data-file="program" aria-selected="true">program.asm</button>
+    <button type="button" role="tab" data-file="vga.inc" aria-selected="false">vga.inc</button>
+  </div>
+  <textarea class="pg-editor" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="Assembly source"></textarea>
+  <pre class="pg-console" aria-label="Output"></pre>
+  <noscript><p>The playground needs JavaScript.</p></noscript>
+</div>
+<link rel="stylesheet" href="{{ "playground/playground.css" | relURL }}">
+{{ range slice "cpu8086" "asm8086" "machine" "playground" }}
+<script src="{{ printf "playground/%s.js" . | relURL }}" defer></script>
+{{ end }}
