@@ -62,7 +62,7 @@ Coordinates go in `BX` (x) and `DX` (y), the colour in `AL`, and every routine p
 
 - [The 8086 Family User's Manual](http://bitsavers.org/components/intel/8086/9800722-03_The_8086_Family_Users_Manual_Oct79.pdf) (Intel, October 1979) is the original reference for every instruction, flag and addressing mode.
   It is a 63 MB scanned PDF.
-  - A more succinct guide to 8086 instructions can be found under this old [Intro to Computers](https://www.oocities.org/mc_introtocomputers/) course: [8086 Family Users Manual](https://bitsavers.org/components/intel/8086/9800722-03_The_8086_Family_Users_Manual_Oct79.pdf)
+  - A more succinct guide to 8086 instructions can be found under this old [Intro to Computers](https://www.oocities.org/mc_introtocomputers/) course: [8086 Family Users Manual](https://www.oocities.org/mc_introtocomputers/Instruction_Timing.PDF)
   - [Intel Op Codes](http://qzx.com/pc-gpe/intel.doc) from the PC Game Programmer's Encyclopedia is a much shorter plain-text list of the instructions but the site is often down.
 - [The NASM manual](https://www.nasm.us/doc/) covers the assembler syntax used here.
 - Michael Abrash's *Graphics Programming Black Book*, [chapter 35](https://www.phatcode.net/res/224/files/html/ch35/35-01.html), covers Bresenham's line algorithm on the VGA in depth.
