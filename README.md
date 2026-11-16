@@ -21,7 +21,8 @@ The `-D` flag is to show posts that are marked with `draft: true`.
 
 The site uses the `mode13h` theme in `themes/mode13h`, which has four looks: `copper`, `turboc`, `vga`, and `turbo`.
 Set the one to publish with `params.variant` in `config.toml`.
-Under `hugo server` a picker in the corner of each page (or the keys `1` and `2`) switches between `copper` and `turboc`.
+A picker in the corner of each page switches between `copper` and `turboc`, and remembers the choice in the browser.
+Under `hugo server` the keys `1` and `2` switch as well.
 `vga` and `turbo` are hidden from the picker for now; add `?theme=vga` or `?theme=turbo` to a URL to see them.
 The previous look is still available by setting `theme = "base16"`.
 

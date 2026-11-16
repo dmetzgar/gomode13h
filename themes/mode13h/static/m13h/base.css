@@ -98,7 +98,7 @@ h1, h2, h3, h4, h5, h6 { line-height: 1.25; }
 .chroma .gd { color: var(--c-del, inherit); }
 .chroma .gi { color: var(--c-ins, inherit); }
 
-/* Preview-only variant picker (injected by m13h.js under `hugo server`). */
+/* Variant picker (injected by m13h.js). */
 
 .variant-picker {
   position: fixed;

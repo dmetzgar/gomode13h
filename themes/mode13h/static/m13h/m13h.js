@@ -343,7 +343,7 @@
   }
 
   // ---------------------------------------------------------------------
-  // Variant handling (and the preview picker, only under `hugo server`).
+  // Variant handling and the picker in the corner of every page.
   // ---------------------------------------------------------------------
   function applyVariant() {
     if (variant() === 'copper') buildSky();
@@ -364,13 +364,14 @@
     var box = document.createElement('div');
     box.className = 'variant-picker';
     box.innerHTML = '<span>theme</span>' + VARIANTS.map(function (v, i) {
-      return '<button type="button" value="' + v + '" title="key ' + (i + 1) + '">' + v + '</button>';
+      return '<button type="button" value="' + v + '" ">' + v + '</button>';
     }).join('');
     box.addEventListener('click', function (e) {
       if (e.target.value) setVariant(e.target.value);
     });
     document.body.appendChild(box);
-    document.addEventListener('keydown', function (e) {
+    // Number keys switch too, but only under `hugo server`: a visitor should not change the look by typing.
+    if (root.hasAttribute('data-preview')) document.addEventListener('keydown', function (e) {
       if (e.metaKey || e.ctrlKey || e.altKey || /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
       var n = parseInt(e.key, 10);
       if (n >= 1 && n <= VARIANTS.length) setVariant(VARIANTS[n - 1]);
@@ -381,7 +382,7 @@
   if (strip) paintStrip(strip);
   var fx = document.querySelector('canvas.fx');
   if (fx) initFx(fx);
-  if (root.hasAttribute('data-preview')) buildPicker();
+  buildPicker();
   applyVariant();
 
   var resizeTimer;

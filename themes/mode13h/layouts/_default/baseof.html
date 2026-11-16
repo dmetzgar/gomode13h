@@ -10,18 +10,16 @@
 {{ hugo.Generator }}
 <title>{{ if .IsHome }}{{ site.Title }}{{ else }}{{ .Title }} - {{ site.Title }}{{ end }}</title>
 <link rel="alternate" href="{{ "index.xml" | relURL }}" type="application/rss+xml" title="{{ site.Title }}">
-{{- if hugo.IsServer }}
 <script>
-// Preview only: pick the variant before first paint (?theme=x wins, then the last one chosen in the picker).
+// Pick the variant before first paint (?theme=x wins, then the last one chosen in the picker).
 (function () {
   try {
     var v = new URLSearchParams(location.search).get('theme'), stored = localStorage.getItem('m13h-variant');
-    if (!v && /^(copper|turboc)$/.test(stored)) v = stored;
+    if (!/^(copper|turboc|vga|turbo)$/.test(v)) v = /^(copper|turboc)$/.test(stored) ? stored : null;
     if (v) document.documentElement.setAttribute('data-theme', v);
   } catch (e) {}
 })();
 </script>
-{{- end }}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:ital,wght@0,400;0,600;1,400&display=swap">
