@@ -1,0 +1,3 @@
+name = "mode13h"
+description = "Mode 13h / Turbo Vision look for mode19.net, with switchable variants"
+min_version = "0.146.0"

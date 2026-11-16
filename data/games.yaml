@@ -1,0 +1,135 @@
+# Games that ran in mode 13h. The `games` shortcode shows these on /games/.
+#
+# Only entries with `confirmed: true` appear on the site.
+# Everything else is a candidate: recorded here, hidden until someone checks it.
+# To confirm one, set `confirmed: true` and say how you know in `source`.
+#
+# Fields: title, year, developer, confirmed, source (evidence, not shown),
+# notes (Markdown, shown under the title), research (working notes, not shown),
+# links (name + url, where to get the game).
+
+- title: "King's Quest V: Absence Makes the Heart Go Yonder!"
+  year: 1990
+  developer: Sierra On-Line
+  confirmed: false
+  links:
+    - name: GOG
+      url: https://www.gog.com/en/game/kings_quest_4_5_6
+
+- title: "Space Quest IV: Roger Wilco and the Time Rippers"
+  year: 1991
+  developer: Sierra On-Line
+  confirmed: false
+  links:
+    - name: GOG
+      url: https://www.gog.com/en/game/space_quest_4_5_6
+
+- title: "Indiana Jones and the Fate of Atlantis"
+  year: 1992
+  developer: LucasArts
+  confirmed: false
+  links:
+    - name: GOG
+      url: https://www.gog.com/en/game/indiana_jones_and_the_fate_of_atlantis
+    - name: Steam
+      url: https://store.steampowered.com/app/6010/
+
+- title: "Ultima VII: The Black Gate"
+  year: 1992
+  developer: Origin Systems
+  confirmed: false
+  links:
+    - name: GOG
+      url: https://www.gog.com/en/game/ultima_7_complete
+
+- title: "Master of Orion"
+  year: 1993
+  developer: Simtex
+  confirmed: false
+  links:
+    - name: GOG
+      url: https://www.gog.com/en/game/master_of_orion_1_2
+
+- title: "Lands of Lore: The Throne of Chaos"
+  year: 1993
+  developer: Westwood Studios
+  confirmed: false
+  links:
+    - name: GOG
+      url: https://www.gog.com/en/game/lands_of_lore_1_2
+
+- title: "X-COM: UFO Defense"
+  year: 1994
+  developer: MicroProse
+  confirmed: false
+  links:
+    - name: GOG
+      url: https://www.gog.com/en/game/xcom_ufo_defense
+    - name: Steam
+      url: https://store.steampowered.com/app/7760/
+
+- title: "Master of Magic"
+  year: 1994
+  developer: Simtex
+  confirmed: false
+  links:
+    - name: GOG
+      url: https://www.gog.com/en/game/master_of_magic_classic
+
+- title: "Descent"
+  year: 1995
+  developer: Parallax Software
+  confirmed: false
+  links:
+    - name: GOG
+      url: https://www.gog.com/en/game/descent
+
+- title: "Star Trek: 25th Anniversary"
+  year: 1992
+  developer: Interplay
+  confirmed: false
+  research: >-
+    320x200 in 256 colours, and reportedly supported MCGA, which cannot do unchained modes.
+    Likely 13h, but no source names the mode. Check in the DOSBox debugger.
+
+- title: "Heretic"
+  year: 1994
+  developer: Raven Software
+  confirmed: false
+  research: >-
+    Doom engine, but recalled as writing to plain mode 13h instead of Doom's unchained mode.
+    Check i_ibm.c in the released source.
+
+- title: "Wolfenstein 3D"
+  year: 1992
+  developer: id Software
+  confirmed: false
+  research: >-
+    Probably does not belong. Recalled as setting mode 13h and then unchaining it
+    (planar 320x200 with page flipping), with no option for plain 13h.
+    Check VL_SetVGAPlaneMode in the released source.
+
+- title: "Doom"
+  year: 1993
+  developer: id Software
+  confirmed: false
+  research: >-
+    Probably does not belong. Recalled as setting mode 13h and then unchaining it,
+    rendering to a RAM buffer and copying into planar pages, with no option for plain 13h.
+    Check I_InitGraphics in the released source.
+
+- title: "Epic Pinball"
+  year: 1993
+  developer: Digital Extremes
+  confirmed: false
+  research: >-
+    Probably does not belong. Recalled as a Mode X game (320x240, hardware-scrolled tables).
+    Check the screen height in DOSBox: 240 lines rules out 13h.
+
+- title: "Jazz Jackrabbit"
+  year: 1994
+  developer: Epic MegaGames
+  confirmed: false
+  research: >-
+    Unsure, leaning towards does not belong. 320x200 in 256 colours, but the fast smooth
+    scrolling suggests an unchained mode with hardware scrolling. Check in the DOSBox debugger.

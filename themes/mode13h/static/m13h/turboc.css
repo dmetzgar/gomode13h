@@ -1,0 +1,195 @@
+/*
+ * turboc -- "Paper over the IDE"
+ * A Turbo C++ session fills the screen behind the page (drawn as text by m13h.js);
+ * the writing sits on a plain light sheet in a modern face. Code blocks are the one
+ * place the Borland editor colours come forward.
+ *
+ * Menu bar and status line styles are in turbo.css.
+ */
+
+html[data-theme="turboc"] {
+  --paper: #f2f0ec;
+  --ink: #1c1c1c;
+  --muted: #61615c;
+  --rule: #cfccc4;
+  --blue: #0000aa;
+  --red: #aa0000;
+  --page-width: 50rem;
+
+  --c-comment: #aaa;
+  --c-pre: #55ff55;
+  --c-kw: #fff;
+  --c-type: #fff;
+  --c-str: #55ffff;
+  --c-num: #55ffff;
+  --c-fn: #ffff55;
+  --c-attr: #ffff55;
+  --c-punct: #ffff55;
+  --c-lnum: #5c5cd6;
+  --c-hl: #000080;
+  --lang-label: block;
+
+  background: var(--blue);
+
+  body {
+    background: transparent;   /* let the fixed .backdrop show through */
+    color: var(--ink);
+    font: 18px/1.7 "IBM Plex Sans", system-ui, sans-serif;
+  }
+
+  ::selection { background: var(--blue); color: #fff; }
+
+  /* The IDE behind everything */
+
+  .backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    background: var(--blue);
+  }
+
+  .ide {
+    margin: 0;
+    font: 16px/1 "VGA", monospace;
+    color: #ffff55;
+    opacity: .6;
+    white-space: pre;
+    user-select: none;
+  }
+
+  .ide b { font-weight: normal; color: #fff; }
+  .ide i { font-style: normal; }
+  .ide .kw { color: #fff; }
+  .ide .cm { color: #aaa; }
+  .ide .st, .ide .nu { color: #55ffff; }
+  .ide .pp, .ide .ok { color: #55ff55; }
+  .ide .sb { color: #0000aa; background: #00aaaa; }
+
+  /* Sheets */
+
+  .page { padding-top: 2.5rem; padding-bottom: 3.5rem; }
+
+  .window {
+    margin: 0 0 3rem;
+    padding: 2.75rem 3.5rem 3rem;
+    background: var(--paper);
+    box-shadow: 16px 16px 0 rgba(0, 0, 0, .5);
+  }
+
+  a { color: var(--blue); text-underline-offset: .2em; text-decoration-thickness: 1px; }
+  a:hover { color: var(--red); }
+
+  /* Small labels borrow the text-mode font. */
+  .window-bar, .post-item time, .post-meta time, .file-list time, .tag, .btn, .year, .count,
+  .hero .tagline, .post-item .more {
+    font: 16px/1.5 "VGA", monospace;
+  }
+
+  .window-bar {
+    display: block;
+    margin: -2.75rem -3.5rem 2.25rem;
+    padding: 2px 2ch;
+    color: #000;
+    background: #aaa;
+  }
+
+  .window-bar > :not(.window-title) { display: none; }
+  .window-bar .t-name { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .window-bar .t-name::first-letter { color: var(--red); }
+  .post > .window-bar, .hero > .window-bar { display: none; }
+
+  /* Home */
+
+  .hero { padding-top: 2.5rem; padding-bottom: 2.5rem; }
+  .hero .logo { margin: 0; font: 64px/1 "VGA", monospace; color: var(--blue); }
+  .hero .tagline { margin: .5rem 0 0; color: var(--muted); }
+
+  .post-item { margin-bottom: 2.5rem; }
+  .post-item:last-of-type { margin-bottom: 0; }
+  .post-item time { color: var(--muted); }
+  .post-item h2 { margin: .1rem 0 .5rem; font-size: 1.5rem; font-weight: 600; line-height: 1.3; }
+  .post-item h2 a { text-decoration: none; }
+  .post-item .summary p { margin: 0 0 .4rem; }
+
+  .file-list li { border-bottom: 1px solid var(--rule); }
+  .file-list a { padding: .5rem 0; color: var(--ink); }
+  .file-list a:hover { color: var(--blue); }
+  .file-list time { color: var(--muted); }
+
+  .btn {
+    display: inline-block;
+    margin-top: 1.75rem;
+    padding: 2px 3ch;
+    text-decoration: none;
+    color: #000;
+    background: #00aa00;
+    box-shadow: 1ch 12px 0 #000;
+  }
+
+  .btn:hover { color: #fff; }
+
+  .list-title, .not-found h1 { margin: 0 0 1.75rem; font-size: 2rem; font-weight: 600; }
+  .year { margin: 2rem 0 .25rem; font-weight: normal; color: var(--red); }
+
+  .term-list { display: flex; flex-wrap: wrap; gap: .75rem 1.5rem; }
+  .tag { padding: 1px 1ch; text-decoration: none; color: #000; background: #c8c5bd; }
+  .tag::first-letter { color: var(--red); }
+  .tag:hover { color: #000; background: #00aa00; }
+  .count { color: var(--muted); }
+
+  /* Article */
+
+  .post-header { margin-bottom: 2.25rem; }
+  .post-header h1 { margin: 0 0 1rem; font-size: 2.25rem; font-weight: 600; line-height: 1.2; letter-spacing: -.01em; }
+  .post-meta { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem 1.5rem; color: var(--muted); }
+
+  .prose p, .prose ul, .prose ol { margin: 0 0 1.25em; }
+  .prose h1, .prose h2, .prose h3 { margin: 2em 0 .75em; font-weight: 600; }
+  .prose h1 { font-size: 1.6rem; }
+  .prose h2 { font-size: 1.3rem; }
+  .prose h3 { font-size: 1.1rem; color: var(--muted); }
+
+  .prose :not(pre) > code {
+    font: .86em "IBM Plex Mono", monospace;
+    padding: .1em .35em;
+    background: #e2dfd8;
+  }
+
+  .prose blockquote { margin: 0 0 1.25em; padding-left: 1.25rem; border-left: 4px solid var(--blue); color: var(--muted); }
+  .prose hr { border: 0; border-top: 1px solid var(--rule); margin: 2.5em 0; }
+  .prose th { border-bottom: 2px solid var(--ink); }
+  .prose td { border-bottom: 1px solid var(--rule); }
+
+  /* Code: Borland colours, modern monospace. */
+  .highlight, .prose > pre {
+    margin: 0 0 1.5em;
+    padding: 1.6rem 1.25rem 1.25rem;
+    font: 14.5px/1.55 "IBM Plex Mono", ui-monospace, monospace;
+    color: #ffff55;
+    background: var(--blue);
+    box-shadow: 8px 8px 0 rgba(0, 0, 0, .3);
+  }
+
+  .highlight code[data-lang]::before {
+    padding: 0 1ch;
+    font: 16px/1.25 "VGA", monospace;
+    text-transform: uppercase;
+    color: #000;
+    background: #aaa;
+  }
+
+  .comments { background: #22272e; }
+  .comments .window-bar { margin-bottom: 1.5rem; }
+
+  @media (max-width: 48em) {
+    body { font-size: 16.5px; }
+    .page { padding: 1rem 0 2rem; }
+    .window { margin-bottom: 1.5rem; padding: 1.75rem 1.25rem 2rem; box-shadow: none; }
+    .window-bar { margin: -1.75rem -1.25rem 1.5rem; }
+    .hero .logo { font-size: 48px; }
+    .post-header h1 { font-size: 1.75rem; }
+    .highlight, .prose > pre { margin-left: -1.25rem; margin-right: -1.25rem; font-size: 13px; box-shadow: none; }
+  }
+}

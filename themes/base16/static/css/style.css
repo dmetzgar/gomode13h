@@ -19,19 +19,82 @@
 
 /* General Page Layout */
 
+@font-face {
+  font-family: 'ArticleTextFont';
+  /* src: url(/fonts/ChevyRay%20-%20Babyblocks%20Mono.ttf) format('truetype'); */
+  /* src: url(/fonts/ChevyRay%20-%20Babyblocks.ttf) format('truetype'); */
+  /* src: url(/fonts/ChevyRay%20-%20Bird%20Seed.ttf) format('truetype'); */
+  /* src: url(/fonts/ChevyRay%20-%20Bubble%20Time.ttf) format('truetype'); */
+  /* src: url(/fonts/ChevyRay%20-%20Chocolate%20Mono.ttf) format('truetype'); */
+  /* src: url(/fonts/ChevyRay%20-%20Chocolate.ttf) format('truetype'); */
+  /* src: url(/fonts/ChevyRay%20-%20Classified.ttf) format('truetype'); */
+  /* src: url(/fonts/ChevyRay%20-%20Column.ttf) format('truetype'); */
+  /* src: url(/fonts/ChevyRay%20-%20Curse.ttf) format('truetype'); */
+  /* src: url(/fonts/ChevyRay%20-%20Express%20Mono.ttf) format('truetype'); */
+  /* src: url(/fonts/ChevyRay%20-%20Express.ttf) format('truetype'); */
+  /* src: url(/fonts/ChevyRay%20-%20Lantern.ttf) format('truetype'); */
+  /* src: url(/fonts/ChevyRay%20-%20Lazytown%20Mono.ttf) format('truetype'); */
+  /* src: url(/fonts/ChevyRay%20-%20Lazytown.ttf) format('truetype'); */
+  /* src: url(/fonts/ChevyRay%20-%20Little%20League%20Mono.ttf) format('truetype'); */
+  /* src: url(/fonts/ChevyRay%20-%20Little%20League.ttf) format('truetype'); */
+  /* src: url(/fonts/ChevyRay%20-%20Love%20Bug.ttf) format('truetype'); */
+  /* src: url(/fonts/ChevyRay%20-%20Magic%20Book.ttf) format('truetype'); */
+  /* src: url(/fonts/ChevyRay%20-%20Picory.ttf) format('truetype'); */
+  /* src: url(/fonts/ChevyRay%20-%20Pinch%20Mono.ttf) format('truetype'); */
+  /* src: url(/fonts/ChevyRay%20-%20Pinch.ttf) format('truetype'); */
+  /* src: url(/fonts/ChevyRay%20-%20Rise.ttf) format('truetype'); */
+  /* src: url(/fonts/ChevyRay%20-%20Roundabout.ttf) format('truetype'); */
+  /* src: url(/fonts/ChevyRay%20-%20Skullboy%20Mono.ttf) format('truetype'); */
+  /* src: url(/fonts/ChevyRay%20-%20Skullboy.ttf) format('truetype'); */
+  /* src: url(/fonts/ChevyRay%20-%20Softsquare%20Mono.ttf) format('truetype'); */
+  /* src: url(/fonts/ChevyRay%20-%20Softsquare%20Wide.ttf) format('truetype'); */
+  /* src: url(/fonts/ChevyRay%20-%20Softsquare.ttf) format('truetype'); */
+  /* src: url(/fonts/ChevyRay%20-%20Stapler.ttf) format('truetype'); */
+  /* src: url(/fonts/ChevyRay%20-%20Tentown.ttf) format('truetype'); */
+  /* src: url(/fonts/ChevyRay%20-%20Thicket%20Mono.ttf) format('truetype'); */
+  /* src: url(/fonts/ChevyRay%20-%20Thicket.ttf) format('truetype'); */
+  src: url(/fonts/ChevyRay%20-%20Thinstix.ttf) format('truetype');
+  /* src: url(/fonts/ChevyRay%20-%20Vector%20Mono.ttf) format('truetype'); */
+  /* src: url(/fonts/ChevyRay%20-%20Vector.ttf) format('truetype'); */
+}
+
+@font-face {
+  font-family: 'CodeSnippetFont';
+  src: url('https://cdn.jsdelivr.net/gh/tonsky/FiraCode@5.2/distr/woff2/FiraCode-Regular.woff2') format('woff2'),
+       url("https://cdn.jsdelivr.net/gh/tonsky/FiraCode@5.2/distr/woff/FiraCode-Regular.woff") format("woff");
+}
+
+code { font-family: 'Fira Code', monospace; }
+
+@supports (font-variation-settings: normal) {
+  code { font-family: 'Fira Code VF', monospace; }
+}
+
+@font-face {
+  font-family: 'HeaderFont';
+  src: url(/fonts/ChevyRay%20-%20Thinstix.ttf) format('truetype');
+}
+
 body {
   margin: 0;
   background-color: #2d2d2d;
   color: #f2f0ec;
-  line-height: 1.5;
-  font-size: 100%;
-  font-family: 'Source Code Pro', monospace;
+  /* line-height: 1.5; */
+  font-size: 1.2em;
+  font-family: "Roboto Slab","ff-tisa-web-pro","Georgia",Arial,sans-serif;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
 }
 
 .container {
-  max-width: 52em;
-  margin-left: auto;
-  margin-right: auto;
+  max-width: 70em;
+  margin-left: 1em;
+  margin-right: 1em;
+  width: stretch;
+  align-self: center;
 }
 
 div.right {
@@ -52,8 +115,8 @@ article.single section,
 .article-list article {
   background-color: #f2f0ec;
   color: #2d2d2d;
-  padding-left: 8rem;
-  padding-right: 8rem;
+  padding-left: 4rem;
+  padding-right: 4rem;
   padding-top: 1rem;
   padding-bottom: 1rem;
 }
@@ -70,6 +133,7 @@ header, footer {
   background-color: #393939;
   padding-top: 1rem;
   padding-bottom: 1rem;
+  width: stretch;
 }
 
 header {
@@ -103,6 +167,7 @@ footer {
 /* Typography */
 
 h1, h2, h3, h4, h5, h6 {
+  font-family: "Roboto Slab","ff-tisa-web-pro","Georgia",Arial,sans-serif;
   font-weight: bold;
   line-height: 1.25;
   margin-top: 1em;
@@ -114,7 +179,7 @@ p {
   margin-bottom: 1rem;
 }
 
-h1 { font-size: 2rem }
+h1 { font-size: 1.9rem }
 h2 { font-size: 1.5rem }
 h3 { font-size: 1.25rem }
 h4 { font-size: 1rem }
@@ -122,8 +187,8 @@ h5 { font-size: .875rem }
 h6 { font-size: .75rem }
 
 pre, code {
-  font-family: inherit;
-  font-size: inherit;
+  font-family: 'CodeSnippetFont';
+  font-size: 0.9em;
 }
 
 /* Header Layout */
@@ -147,23 +212,23 @@ footer a {
 
 .page-not-found h1 {
   text-align: center;
-  font-size: 5em;
+  font-size: 3em;
 }
 
 .page-not-found h2 {
   text-align: center;
-  font-size: 3em;
+  font-size: 2.1em;
   color: #a09f93;
   margin-bottom: 4rem;
 }
 
 @media (max-width: 52em) {
   .page-not-found h1 {
-    font-size: 3em;
+    font-size: 2.1em;
   }
 
   .page-not-found h2 {
-    font-size: 2em;
+    font-size: 1.9em;
   }
 }
 
@@ -183,12 +248,12 @@ footer a {
 
 @media (max-width: 52em) {
   .homepage h1.site-title {
-    font-size: 3em;
+    font-size: 2.1em;
   }
 }
 
 .homepage h1.headline {
-  font-size: 3em;
+  font-size: 2.1em;
   color: #ffcc66;
 }
 
@@ -223,7 +288,7 @@ footer a {
 /* Post List Layout */
 
 .article-list h1.list-title {
-  font-size: 3em;
+  font-size: 2.1em;
   color: #ffcc66;
 }
 
@@ -255,10 +320,14 @@ footer a {
 .article-list article section.summary a { color: #d27b53; }
 
 
+.article-more a {
+  color: #d3d0c8;
+}
+
 /* Single Post Layout */
 
 article.single .meta {
-  font-size: 0.9em;
+  /* font-size: 0.9em; */
   text-align: right;
 }
 
@@ -279,7 +348,7 @@ article.single .meta .val, article.single .meta .val a {
 
 article.single h1.headline {
   margin-top: 0;
-  font-size: 3em;
+  font-size: 2.1em;
   color: #ffcc66;
 }
 
@@ -293,6 +362,7 @@ article.single h1.headline {
 article.single section.body {
   padding-top: 4rem;
   padding-bottom: 3rem;
+  align-content: center;
 }
 
 @media (max-width: 52em) {
@@ -305,7 +375,7 @@ article.single section.body {
 /* Highlight Colors */
 
 article.single section.body h1 { color: #6699cc; }
-article.single section.body h2 { color: #99cc99; }
+article.single section.body h2 { color: #55b655; }
 article.single section.body h3 { color: #f99157; }
 article.single section.body h4 { color: #f2777a; }
 article.single section.body h5 { color: #515151; }
@@ -322,13 +392,13 @@ article.single * {
 article.single pre {
   margin-top: 0;
   margin-bottom: 1rem;
-  overflow-x: scroll;
+  overflow-x: auto;
   border-radius: 3px;
   padding: 2rem;
 }
 
 article.single p code {
-  padding: 0.2em 0.5em;
+  padding: 0.1em 0.2em;
   border-radius: 3px;
   background: #747369;
   color: #f2f0ec;
@@ -336,12 +406,12 @@ article.single p code {
 
 article.single figure, article.single div.highlight {
   box-sizing: border-box;
-  max-width: 52rem;
-  width: 52rem;
-  margin-left: -8rem;
-  margin-right: -8rem;
+  max-width: 100%;
+  width: 95%;
+  margin-left: 0rem;
+  margin-right: 0rem;
   margin-bottom: 1rem;
-  padding: 1em;
+  padding: 0.2em;
   background-color: #393939;
 }
 
@@ -386,6 +456,10 @@ article.single td {
   border-bottom-width: 1px;
   border-bottom-style: solid;
   border-bottom-color: #a09f93;
+}
+
+article.single td pre {
+  padding: .25rem 0.4rem;
 }
 
 article.single tr:last-child td {

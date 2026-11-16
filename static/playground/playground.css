@@ -1,0 +1,81 @@
+/* Playground UI. Kept neutral so it sits inside any of the theme variants. */
+
+.pg { margin: 2rem 0; }
+
+.pg-screens { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-start; }
+
+.pg canvas {
+  display: block;
+  width: 100%;
+  max-width: 640px;
+  aspect-ratio: 4 / 3;          /* 320x200 was shown on a 4:3 monitor: pixels are taller than wide */
+  image-rendering: pixelated;
+  background: #000;
+  border: 2px solid #000;
+  outline: 1px solid rgba(128, 128, 128, .6);
+}
+
+.pg canvas:focus-visible { outline: 2px solid #ffdf7d; }
+.pg .pg-back { max-width: 320px; }
+.pg .pg-back[hidden] { display: none; }
+
+.pg-status, .pg-console, .pg-editor, .pg-tabs button {
+  font: 13.5px/1.5 "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+
+.pg-status { margin: 8px 0 12px; min-height: 1.5em; white-space: pre-wrap; opacity: .85; }
+
+.pg-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-bottom: 14px; font-size: .9rem; }
+.pg-bar label { display: inline-flex; align-items: center; gap: 6px; }
+
+.pg-bar button, .pg-bar select, .pg-tabs button {
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: 1px solid currentColor;
+  border-radius: 0;
+  padding: 4px 12px;
+  cursor: pointer;
+}
+
+.pg-bar select { padding: 4px 6px; background: Canvas; color: CanvasText; border-color: GrayText; }
+.pg-bar button:hover, .pg-bar button:focus-visible, .pg-tabs button:hover { background: rgba(128, 128, 128, .3); }
+.pg-bar .pg-run { font-weight: 600; }
+
+.pg-tabs { display: flex; gap: 4px; }
+.pg-tabs button { font-size: 13.5px; padding: 4px 12px; border-bottom: 0; opacity: .6; }
+.pg-tabs button[aria-selected="true"] { opacity: 1; background: #0b0d14; color: #d8dae5; border-color: #0b0d14; }
+
+.pg-editor {
+  display: block;
+  width: 100%;
+  height: 34rem;
+  padding: 12px 14px;
+  color: #d8dae5;
+  background: #0b0d14;
+  border: 0;
+  border-radius: 0;
+  resize: vertical;
+  tab-size: 8;
+  white-space: pre;
+  overflow: auto;
+}
+
+.pg-editor:focus-visible { outline: 2px solid #ffdf7d; outline-offset: -2px; }
+
+/* .prose pre rules from the theme would restyle this; keep it plain. */
+.prose pre.pg-console, .pg-console {
+  margin: 0;
+  padding: 8px 14px;
+  min-height: 2.5em;
+  max-height: 12rem;
+  overflow: auto;
+  white-space: pre-wrap;
+  color: #beff7d;
+  background: #05060e;
+  border: 0;
+  border-top: 1px solid #2c3252;
+}
+
+.pg-console .pg-error { color: #ff9e7d; }
+.pg-console a { color: inherit; }

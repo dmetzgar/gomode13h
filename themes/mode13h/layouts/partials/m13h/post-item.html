@@ -1,0 +1,13 @@
+{{ $accent := partial "m13h/accent.html" . }}
+<article class="post-item" style="--accent: {{ $accent.color | safeCSS }}" itemscope itemtype="http://schema.org/BlogPosting">
+  <div class="post-item-meta">
+    <span class="swatch" title="VGA palette index {{ $accent.index }}">{{ $accent.index }}</span>
+    <time itemprop="datePublished" datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006-01-02" }}</time>
+    <span class="file">{{ partial "m13h/filename.html" . }}</span>
+  </div>
+  <h2 itemprop="headline"><a href="{{ .RelPermalink }}">{{ .Title }}{{ if .Draft }} (Draft){{ end }}</a></h2>
+  <div class="summary">
+    {{ .Summary }}
+  </div>
+  {{ if .Truncated }}<a class="more" href="{{ .RelPermalink }}" aria-label="Read more of {{ .Title }}">Read more</a>{{ end }}
+</article>

@@ -1,0 +1,7 @@
+{{/* Window chrome. Call with (dict "name" "Readable title" "file" "FILE.EXT"). Variants decide which parts show. */}}
+<header class="window-bar" aria-hidden="true">
+  <span class="window-close">[<b>■</b>]</span>
+  <span class="window-title"><span class="t-name">{{ .name }}</span><span class="t-file">{{ .file | default .name }}</span></span>
+  <span class="window-num">1</span>
+  <span class="window-zoom">[<b>↕</b>]</span>
+</header>

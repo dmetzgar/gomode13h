@@ -1,0 +1,45 @@
+{{ define "main" }}
+{{ $accent := partial "m13h/accent.html" . }}
+<article class="window post" style="--accent: {{ $accent.color | safeCSS }}" itemscope itemtype="http://schema.org/BlogPosting">
+  {{ partial "m13h/window-bar.html" (dict "name" .Title "file" (partial "m13h/filename.html" .)) }}
+  <div class="window-body">
+    <header class="post-header">
+      <h1 itemprop="headline">{{ .Title }}</h1>
+      <div class="post-meta">
+        <span class="swatch" title="VGA palette index {{ $accent.index }}">{{ $accent.index }}</span>
+        {{ if not .Date.IsZero }}<time itemprop="datePublished" datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>{{ end }}
+        {{ with .GetTerms "tags" }}
+        <span class="tags">{{ range . }}<a class="tag" href="{{ .RelPermalink }}">{{ .LinkTitle | lower }}</a>{{ end }}</span>
+        {{ end }}
+      </div>
+    </header>
+    <div class="prose" itemprop="articleBody">
+      {{ .Content }}
+    </div>
+  </div>
+</article>
+
+{{ if eq .Type "posts" }}
+<section class="window comments">
+  {{ partial "m13h/window-bar.html" (dict "name" "Comments" "file" "Message") }}
+  <div class="window-body">
+    <script src="https://giscus.app/client.js"
+      data-repo="dmetzgar/gomode13h"
+      data-repo-id="MDEwOlJlcG9zaXRvcnkxMzE0Nzk0MjU="
+      data-category="Announcements"
+      data-category-id="DIC_kwDOB9Y3gc4CRuUU"
+      data-mapping="pathname"
+      data-strict="0"
+      data-reactions-enabled="1"
+      data-emit-metadata="0"
+      data-input-position="bottom"
+      data-theme="dark_dimmed"
+      data-lang="en"
+      data-loading="lazy"
+      crossorigin="anonymous"
+      async>
+    </script>
+  </div>
+</section>
+{{ end }}
+{{ end }}
