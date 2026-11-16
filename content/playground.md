@@ -17,13 +17,19 @@ Edit the assembly file, press **Run**, and it is assembled and executed: the pix
 - **CPU:** the full documented 8086 instruction set.
   Nothing from the 80186 onwards, so no `shl ax, 4`, `push 5` or `pusha`.
 - **Assembler:** NASM-style syntax, with labels, `.local` labels, `equ`, `db`/`dw`/`dd`, `times`, `%include` and expressions.
-- **Video:** mode 13h only, 320×200 with 256 colours, through `int 10h` and the palette ports `3C7h`–`3C9h`.
-  Mode X and the other register tricks are not emulated.
+- **Video:** mode 13h, 320×200 with 256 colours, through `int 10h` and the palette ports `3C7h`–`3C9h`.
+- **Mode X:** turn chain-4 off through the sequencer and the card's full 256K appears as four planes, with the map mask, read map, write modes and latches working as on a real VGA.
+  The CRTC start address (for page flipping) and the 240-line setting work too.
+  Split screen, pixel panning and the 400- and 480-line modes are not emulated.
+  The *Mode X page flipping* example shows the setup.
 - **Two buffers:** the screen at segment `A000h`, and a back buffer in the 64K above your program.
-  Check the *Show back buffer* option to watch it.
-- **Timing:** a fixed 60 frames a second (or 70, which is what a real VGA did in this mode).
+- **Timing:** a fixed 60 frames a second, or 70, which is what a real VGA did in this mode, or 30 to slow things down.
   The CPU itself is not slowed down.
   It runs as fast as your browser allows.
+- **Clock cycles:** every instruction is charged the clock cycles Intel published for the 8086, including the effective address time for memory operands.
+  The status line shows how many cycles the program used per second and per frame.
+  For scale, an original 4.77 MHz PC had about 79,500 cycles in a 60 Hz frame.
+  The figures leave out the time a real 8086 spent fetching instruction bytes, so real hardware was somewhat slower still.
   Use `wait_retrace` to wait for the frame to be drawn.
 - **Raster effects:** each scanline is read from video memory as the beam reaches it, so changing the palette while the frame is drawing can have interesting effects.
 - **Program format:** a `.COM` file.
