@@ -12,12 +12,13 @@
     { file: 'bounce.asm', title: 'Double buffering' },
     { file: 'palette.asm', title: 'Palette cycling' },
     { file: 'fire.asm', title: 'Fire' },
-    { file: 'copper.asm', title: 'Copper bars' }
+    { file: 'copper.asm', title: 'Copper bars' },
+    { file: 'modex.asm', title: 'Mode X page flipping' }
   ];
 
-  // The CPU is not held to any period speed: each frame gets as many instructions as this
-  // browser can execute in about FRAME_SHARE of the frame time, re-measured as it runs.
-  var FRAME_SHARE = 0.6, MIN_BUDGET = 100000, MAX_BUDGET = 50000000;
+  // The CPU is not held to any period speed: each frame gets as many clock cycles as this
+  // browser can emulate in about FRAME_SHARE of the frame time, re-measured as it runs.
+  var FRAME_SHARE = 0.6, MIN_BUDGET = 1000000, MAX_BUDGET = 1000000000;
 
   // KeyboardEvent.code -> PC scancode (set 1).
   var SCAN = {
@@ -35,19 +36,18 @@
     var pinned = el.getAttribute('data-example');   // a page can ask for a particular example
     var store = pinned ? null : STORE;              // and then edits are not remembered
     var $ = function (sel) { return el.querySelector(sel); };
-    var canvas = $('.pg-canvas'), back = $('.pg-back'), status = $('.pg-status'), editor = $('.pg-editor'), output = $('.pg-console');
+    var canvas = $('.pg-canvas'), status = $('.pg-status'), editor = $('.pg-editor'), output = $('.pg-console');
     var runButton = $('.pg-run'), pauseButton = $('.pg-pause'), exampleSelect = $('.pg-example');
-    var refreshSelect = $('.pg-refresh'), showBack = $('.pg-showback'), tabs = el.querySelectorAll('.pg-tabs button');
+    var refreshSelect = $('.pg-refresh'), tabs = el.querySelectorAll('.pg-tabs button');
 
     var ctx = canvas.getContext('2d'), image = ctx.createImageData(320, 200), pixels = new Uint32Array(image.data.buffer);
-    var backCtx = back.getContext('2d'), backImage = backCtx.createImageData(320, 200), backPixels = new Uint32Array(backImage.data.buffer);
 
     var machine = new Mode13hMachine();
     var files = { program: '', 'vga.inc': '' };
     var current = 'program';
     var listing = null, paused = false;
     var lastTime = 0, owed = 0, shown = 0, shownAt = 0, rate = 0;
-    var budget = 400000, tally = 0, executed = 0;
+    var budget = 4000000, tally = 0, executed = 0;
 
     // --- console ------------------------------------------------------------
 
@@ -179,27 +179,30 @@
       if (machine.state === 'idle') text = 'Press Run.';
       else if (paused || machine.state === 'paused') text = 'Paused.\n' + registers();
       else if (machine.state === 'running') {
-        text = 'Running: ' + rate.toFixed(0) + ' frames/s, ' + (executed / 1e6).toFixed(1) + ' million instructions/s' +
+        text = 'Running: ' + rate.toFixed(0) + ' frames/s, ' + (executed / 1e6).toFixed(1) + ' million cycles/s' +
+          (rate >= 1 ? ', ' + Math.round(executed / rate).toLocaleString('en-US') + ' cycles/frame' : '') +
           (machine.getMode() === 0x13 ? '' : ', video mode ' + CPU8086.hex(machine.getMode(), 2) + 'h (set mode 13h to see pixels)');
       } else text = (machine.state === 'fault' ? 'Stopped on an error.' : 'Program ended.') + '\n' + registers();
       status.textContent = text;
     }
 
     function present() {
-      pixels.set(machine.frame);
-      ctx.putImageData(image, 0, 0);
-      if (showBack.checked) {
-        machine.renderSegment(Mode13hMachine.LOAD_SEG + 0x1000, backPixels);
-        backCtx.putImageData(backImage, 0, 0);
+      var h = machine.height;
+      if (canvas.height !== h) {   // a program in a 240-line mode: same 4:3 screen, more rows
+        canvas.height = h;
+        image = ctx.createImageData(320, h);
+        pixels = new Uint32Array(image.data.buffer);
       }
+      pixels.set(machine.frame.subarray(0, 320 * h));
+      ctx.putImageData(image, 0, 0);
     }
 
-    // Emulate one frame, then use how long it took to size the next frame's instruction budget.
+    // Emulate one frame, then use how long it took to size the next frame's cycle budget.
     function frame(step) {
-      var before = performance.now(), took, used;
+      var before = performance.now(), ran = machine.cpu.getExecuted(), took, used;
       machine.runFrame();
       took = performance.now() - before;
-      used = machine.load * budget;
+      used = machine.cpu.getExecuted() - ran;
       tally += used;
       // Only a frame that kept the CPU busy says anything about how fast this browser is.
       if (machine.load > 0.5 && took >= 1) {
@@ -233,7 +236,6 @@
     });
 
     refreshSelect.addEventListener('change', function () { machine.refresh = +refreshSelect.value; });
-    showBack.addEventListener('change', function () { back.hidden = !showBack.checked; });
 
     // --- keyboard -------------------------------------------------------------
 

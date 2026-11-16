@@ -35,6 +35,7 @@ The games page (`content/games.md`) renders its table from `data/games.yaml`.
 ## Playground
 
 The playground page (`content/playground.md`) embeds an 8086 emulator and a mode 13h display with the `playground` shortcode.
+The display also does the unchained modes built on mode 13h (Mode X): four planes, page flipping, and 240 lines.
 Everything it needs is in `static/playground`: the CPU core, a NASM-style assembler, the machine (VGA, timing, BIOS and DOS calls), the page script, the `vga.inc` library and the example programs.
 
 Its tests run under Node, with no dependencies:

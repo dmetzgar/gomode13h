@@ -16,8 +16,6 @@
 }
 
 .pg canvas:focus-visible { outline: 2px solid #ffdf7d; }
-.pg .pg-back { max-width: 320px; }
-.pg .pg-back[hidden] { display: none; }
 
 .pg-status, .pg-console, .pg-editor, .pg-tabs button {
   font: 13.5px/1.5 "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;

@@ -4,6 +4,14 @@
  * Executes real machine code against a 1 MB real-mode address space. Covers the
  * documented 8086 instruction set; 80186+ opcodes are rejected, not emulated.
  *
+ * Time is counted in clock cycles, using Intel's published execution times for the
+ * 8086: a fixed cost per instruction form, plus the effective address calculation
+ * for memory operands, plus the per-bit and per-repetition terms of shifts and
+ * string instructions. Multiplies and divides are documented as a range; they are
+ * charged the low end plus one cycle per set bit of the multiplier or quotient,
+ * which stays inside it. Like Intel's figures, this leaves out the time spent
+ * fetching instruction bytes, so a real 8086 is somewhat slower than the total.
+ *
  * The host supplies `io`:
  *   io.inb(port) -> byte, io.outb(port, byte)
  *   io.interrupt(n, cpu) -> true if the host handled INT n (otherwise the IVT is used)
@@ -23,6 +31,60 @@
     }
   })();
 
+  // Clock cycles by opcode. CYCLES is the cost with register operands (or the only cost);
+  // MEMORY is what a memory operand adds to it, before the effective address time.
+  // Opcodes whose cost depends on the ModRM reg field, a count or a branch are finished in step().
+  var CYCLES = new Uint8Array(256), MEMORY = new Uint8Array(256);
+  (function () {
+    function set(ops, reg, mem) {
+      ops.forEach(function (op) { CYCLES[op] = reg; MEMORY[op] = mem === undefined ? 0 : mem - reg; });
+    }
+    function range(a, b) { var out = []; for (; a <= b; a++) out.push(a); return out; }
+    for (var k = 0; k < 8; k++) {
+      set([k * 8, k * 8 + 1], 3, k === 7 ? 9 : 16);       // ALU r/m, reg (CMP writes nothing back)
+      set([k * 8 + 2, k * 8 + 3], 3, 9);                  // ALU reg, r/m
+      set([k * 8 + 4, k * 8 + 5], 4);                     // ALU acc, imm
+    }
+    set([0x06, 0x0E, 0x16, 0x1E], 10);                    // PUSH seg
+    set([0x07, 0x17, 0x1F], 8);                           // POP seg
+    set([0x27, 0x2F], 4); set([0x37, 0x3F], 8);           // DAA DAS, AAA AAS
+    set(range(0x40, 0x4F), 2);                            // INC/DEC reg16
+    set(range(0x50, 0x57), 11); set(range(0x58, 0x5F), 8);
+    set(range(0x70, 0x7F), 4);                            // Jcc not taken; 16 if taken
+    set([0x84, 0x85], 3, 9);                              // TEST
+    set([0x86, 0x87], 4, 17);                             // XCHG
+    set([0x88, 0x89, 0x8C], 2, 9);                        // MOV r/m, reg
+    set([0x8A, 0x8B, 0x8E], 2, 8);                        // MOV reg, r/m
+    set([0x8D], 2);                                       // LEA: 2 + EA
+    set([0x8F], 8, 17);                                   // POP r/m
+    set(range(0x90, 0x97), 3);                            // NOP, XCHG AX, reg
+    set([0x98], 2); set([0x99], 5);                       // CBW, CWD
+    set([0x9A], 28); set([0x9B], 4);                      // CALL far, WAIT
+    set([0x9C], 10); set([0x9D], 8); set([0x9E, 0x9F], 4);
+    set(range(0xA0, 0xA3), 10);                           // MOV acc <-> direct address
+    set([0xA8, 0xA9], 4);                                 // TEST acc, imm
+    set(range(0xB0, 0xBF), 4);                            // MOV reg, imm
+    set([0xC2], 12); set([0xC3], 8); set([0xCA], 17); set([0xCB], 18);
+    set([0xC4, 0xC5], 16);                                // LES, LDS: 16 + EA
+    set([0xC6, 0xC7], 4, 10);                             // MOV r/m, imm
+    set([0xCC], 52); set([0xCD], 51); set([0xCE], 4); set([0xCF], 24);
+    set([0xD0, 0xD1], 2, 15);                             // shift by 1
+    set([0xD2, 0xD3], 8, 20);                             // shift by CL: plus 4 per bit
+    set([0xD4], 83); set([0xD5], 60); set([0xD6], 4); set([0xD7], 11);
+    set(range(0xD8, 0xDF), 2, 8);                         // ESC
+    set([0xE0, 0xE2], 5); set([0xE1, 0xE3], 6);           // LOOPNE, LOOP, LOOPE, JCXZ when not taken
+    set([0xE4, 0xE5, 0xE6, 0xE7], 10); set([0xEC, 0xED, 0xEE, 0xEF], 8);
+    set([0xE8], 19); set([0xE9, 0xEA, 0xEB], 15);
+    set([0xF4, 0xF5, 0xF8, 0xF9, 0xFA, 0xFB, 0xFC, 0xFD], 2);
+  })();
+
+  // Effective address time by ModRM rm field: without a displacement, and with one.
+  var EA_PLAIN = [7, 8, 8, 7, 5, 5, 6, 5], EA_DISP = [11, 12, 12, 11, 9, 9, 9, 9];
+  // String instructions MOVS CMPS . STOS LODS SCAS, indexed by (opcode - A4h) >> 1: alone, and per repetition.
+  var STRING_ONCE = [18, 22, 0, 11, 12, 15], STRING_REP = [17, 22, 0, 10, 13, 15];
+
+  function bitCount(v) { var n = 0; for (; v; v &= v - 1) n++; return n; }
+
   function hex(v, n) {
     var t = v.toString(16).toUpperCase();
     while (t.length < n) t = '0' + t;
@@ -37,7 +99,9 @@
     var s = new Uint16Array(4);
     var ip = 0;
     var cf = 0, pf = 0, af = 0, zf = 0, sf = 0, tf = 0, ifl = 0, df = 0, of = 0;
-    var cycles = 0, stop = false;
+    var cycles = 0, idle = 0, limit = Infinity, stop = false;
+    var curOp = 0, resumed = false;
+    var video = null;
     var segOverride = -1, rep = 0;
     var mod = 0, reg = 0, rm = 0, ea = 0, eo = 0, eseg = 0;
     var opCS = 0, opIP = 0;   // where the current instruction started, for error reports
@@ -52,8 +116,12 @@
 
     // --- memory -----------------------------------------------------------
 
-    function rd16(a) { return mem[a] | (mem[(a + 1) & 0xFFFFF] << 8); }
-    function wr16(a, v) { mem[a] = v & 0xFF; mem[(a + 1) & 0xFFFFF] = (v >> 8) & 0xFF; }
+    // Data reads and writes go through here so the machine can take over segment A000h
+    // (a VGA in a planar mode does not behave like plain memory). Code is always fetched from `mem`.
+    function rb(a) { return video !== null && (a >>> 16) === 0xA ? video.read(a & 0xFFFF) : mem[a]; }
+    function wb(a, v) { if (video !== null && (a >>> 16) === 0xA) video.write(a & 0xFFFF, v & 0xFF); else mem[a] = v; }
+    function rd16(a) { return rb(a) | (rb((a + 1) & 0xFFFFF) << 8); }
+    function wr16(a, v) { wb(a, v & 0xFF); wb((a + 1) & 0xFFFFF, (v >> 8) & 0xFF); }
 
     function fetch8() {
       var v = mem[((s[CS] << 4) + ip) & 0xFFFFF];
@@ -92,6 +160,7 @@
       var b = fetch8(), off = 0, seg = DS;
       mod = b >> 6; reg = (b >> 3) & 7; rm = b & 7;
       if (mod === 3) return;
+      cycles += MEMORY[curOp] + (mod === 0 ? EA_PLAIN[rm] : EA_DISP[rm]);
       switch (rm) {
         case 0: off = r[BX] + r[SI]; break;
         case 1: off = r[BX] + r[DI]; break;
@@ -109,8 +178,8 @@
       ea = ((s[eseg] << 4) + eo) & 0xFFFFF;
     }
 
-    function getRM8() { return mod === 3 ? g8(rm) : mem[ea]; }
-    function setRM8(v) { if (mod === 3) s8(rm, v); else mem[ea] = v & 0xFF; }
+    function getRM8() { return mod === 3 ? g8(rm) : rb(ea); }
+    function setRM8(v) { if (mod === 3) s8(rm, v); else wb(ea, v & 0xFF); }
     function getRM16() { return mod === 3 ? r[rm] : rd16(ea); }
     function setRM16(v) { if (mod === 3) r[rm] = v; else wr16(ea, v); }
 
@@ -256,45 +325,50 @@
       var w = op & 1, kind = op & 0xFE;
       var d = (df ? -1 : 1) * (w ? 2 : 1);
       var src = s[segOverride >= 0 ? segOverride : DS] << 4, dst = s[ES] << 4;
-      var a, b;
+      var a, b, each = STRING_REP[(kind - 0xA4) >> 1];
+      if (!rep) cycles += STRING_ONCE[(kind - 0xA4) >> 1];
+      else if (resumed) resumed = false;
+      else cycles += 9;
       if (rep && r[CX] === 0) return;
       for (;;) {
         switch (kind) {
           case 0xA4:
             if (w) wr16((dst + r[DI]) & 0xFFFFF, rd16((src + r[SI]) & 0xFFFFF));
-            else mem[(dst + r[DI]) & 0xFFFFF] = mem[(src + r[SI]) & 0xFFFFF];
+            else wb((dst + r[DI]) & 0xFFFFF, rb((src + r[SI]) & 0xFFFFF));
             r[SI] += d; r[DI] += d;
             break;
           case 0xA6:
             if (w) sub16(rd16((src + r[SI]) & 0xFFFFF), rd16((dst + r[DI]) & 0xFFFFF), 0);
-            else sub8(mem[(src + r[SI]) & 0xFFFFF], mem[(dst + r[DI]) & 0xFFFFF], 0);
+            else sub8(rb((src + r[SI]) & 0xFFFFF), rb((dst + r[DI]) & 0xFFFFF), 0);
             r[SI] += d; r[DI] += d;
             break;
           case 0xAA:
             if (w) wr16((dst + r[DI]) & 0xFFFFF, r[AX]);
-            else mem[(dst + r[DI]) & 0xFFFFF] = r[AX] & 0xFF;
+            else wb((dst + r[DI]) & 0xFFFFF, r[AX] & 0xFF);
             r[DI] += d;
             break;
           case 0xAC:
             if (w) r[AX] = rd16((src + r[SI]) & 0xFFFFF);
-            else s8(0, mem[(src + r[SI]) & 0xFFFFF]);
+            else s8(0, rb((src + r[SI]) & 0xFFFFF));
             r[SI] += d;
             break;
           default:   // 0xAE SCAS
             a = (dst + r[DI]) & 0xFFFFF;
             if (w) sub16(r[AX], rd16(a), 0);
-            else sub8(r[AX] & 0xFF, mem[a], 0);
+            else sub8(r[AX] & 0xFF, rb(a), 0);
             r[DI] += d;
             break;
         }
         if (!rep) return;
         r[CX]--;
-        cycles++;
+        cycles += each;
         if (kind === 0xA6 || kind === 0xAE) {
           b = rep === 0xF3 ? 1 : 0;   // REPE continues while ZF=1, REPNE while ZF=0
           if (zf !== b) return;
         }
         if (r[CX] === 0) return;
+        // Out of time: leave IP on this instruction so it carries on from here, as an interrupted REP does.
+        if (cycles >= limit) { ip = opIP; resumed = true; return; }
       }
     }
 
@@ -304,6 +378,9 @@
       var v, t, n, d, q;
       modrm();
       v = w ? getRM16() : getRM8();
+      if (reg < 2) cycles += mod === 3 ? 5 : 11;            // TEST r/m, imm
+      else if (reg < 4) cycles += mod === 3 ? 3 : 16;       // NOT, NEG
+      else if (mod !== 3) cycles += 6;                      // MUL IMUL DIV IDIV from memory
       switch (reg) {
         case 0: case 1:
           if (w) logic16(v & fetch16()); else logic8(v & fetch8());
@@ -315,6 +392,7 @@
           if (w) setRM16(sub16(0, v, 0)); else setRM8(sub8(0, v, 0));
           break;
         case 4:
+          cycles += w ? 118 + Math.min(15, bitCount(v)) : 70 + Math.min(7, bitCount(v));
           if (w) {
             t = r[AX] * v;
             r[AX] = t & 0xFFFF;
@@ -326,6 +404,7 @@
           }
           break;
         case 5:
+          cycles += w ? 128 + Math.min(26, bitCount(v)) : 80 + Math.min(18, bitCount(v));
           if (w) {
             t = ((r[AX] << 16) >> 16) * ((v << 16) >> 16);
             r[AX] = t & 0xFFFF;
@@ -343,11 +422,13 @@
             n = r[DX] * 65536 + r[AX];
             q = Math.floor(n / v);
             if (q > 0xFFFF) { interrupt(0); return; }
+            cycles += 144 + Math.min(18, bitCount(q));
             r[AX] = q; r[DX] = n % v;
           } else {
             n = r[AX];
             q = Math.floor(n / v);
             if (q > 0xFF) { interrupt(0); return; }
+            cycles += 80 + Math.min(10, bitCount(q));
             r[AX] = q | ((n % v) << 8);
           }
           break;
@@ -358,6 +439,7 @@
             if (d === 0) { interrupt(0); return; }
             q = Math.trunc(n / d);
             if (q > 32767 || q < -32768) { interrupt(0); return; }
+            cycles += 165 + Math.min(19, bitCount(q & 0xFFFF));
             r[AX] = q & 0xFFFF; r[DX] = (n % d) & 0xFFFF;
           } else {
             n = (r[AX] << 16) >> 16;
@@ -365,6 +447,7 @@
             if (d === 0) { interrupt(0); return; }
             q = Math.trunc(n / d);
             if (q > 127 || q < -128) { interrupt(0); return; }
+            cycles += 101 + Math.min(11, bitCount(q & 0xFF));
             r[AX] = (q & 0xFF) | (((n % d) & 0xFF) << 8);
           }
           break;
@@ -380,11 +463,13 @@
       segOverride = -1; rep = 0;
       for (;;) {
         op = fetch8();
-        if ((op & 0xE7) === 0x26) segOverride = (op >> 3) & 3;
+        if ((op & 0xE7) === 0x26) { segOverride = (op >> 3) & 3; cycles += 2; }
         else if (op === 0xF2 || op === 0xF3) rep = op;
-        else if (op !== 0xF0) break;
+        else if (op === 0xF0) cycles += 2;
+        else break;
       }
-      cycles++;
+      curOp = op;
+      cycles += CYCLES[op];
 
       // 00-3F: the eight ALU instructions in their six operand forms.
       if (op < 0x40 && (op & 7) < 6) {
@@ -439,15 +524,18 @@
         case 0x70: case 0x71: case 0x72: case 0x73: case 0x74: case 0x75: case 0x76: case 0x77:
         case 0x78: case 0x79: case 0x7A: case 0x7B: case 0x7C: case 0x7D: case 0x7E: case 0x7F:
           t = fetchS8();
-          if (cond(op & 15)) ip = (ip + t) & 0xFFFF;
+          if (cond(op & 15)) { ip = (ip + t) & 0xFFFF; cycles += 12; }
           return;
 
         case 0x80: case 0x82:
-          modrm(); a = getRM8(); t = alu8(reg, a, fetch8()); if (reg !== 7) setRM8(t); return;
+          modrm(); cycles += mod === 3 ? 4 : reg === 7 ? 10 : 17;
+          a = getRM8(); t = alu8(reg, a, fetch8()); if (reg !== 7) setRM8(t); return;
         case 0x81:
-          modrm(); a = getRM16(); t = alu16(reg, a, fetch16()); if (reg !== 7) setRM16(t); return;
+          modrm(); cycles += mod === 3 ? 4 : reg === 7 ? 10 : 17;
+          a = getRM16(); t = alu16(reg, a, fetch16()); if (reg !== 7) setRM16(t); return;
         case 0x83:
-          modrm(); a = getRM16(); t = alu16(reg, a, fetchS8() & 0xFFFF); if (reg !== 7) setRM16(t); return;
+          modrm(); cycles += mod === 3 ? 4 : reg === 7 ? 10 : 17;
+          a = getRM16(); t = alu16(reg, a, fetchS8() & 0xFFFF); if (reg !== 7) setRM16(t); return;
 
         case 0x84: modrm(); logic8(getRM8() & g8(reg)); return;
         case 0x85: modrm(); logic16(getRM16() & r[reg]); return;
@@ -478,9 +566,9 @@
         case 0x9E: setFlags((getFlags() & 0xFF00) | (r[AX] >> 8)); return;
         case 0x9F: s8(4, getFlags() & 0xFF); return;
 
-        case 0xA0: s8(0, mem[((s[segOverride >= 0 ? segOverride : DS] << 4) + fetch16()) & 0xFFFFF]); return;
+        case 0xA0: s8(0, rb(((s[segOverride >= 0 ? segOverride : DS] << 4) + fetch16()) & 0xFFFFF)); return;
         case 0xA1: r[AX] = rd16(((s[segOverride >= 0 ? segOverride : DS] << 4) + fetch16()) & 0xFFFFF); return;
-        case 0xA2: mem[((s[segOverride >= 0 ? segOverride : DS] << 4) + fetch16()) & 0xFFFFF] = r[AX] & 0xFF; return;
+        case 0xA2: wb(((s[segOverride >= 0 ? segOverride : DS] << 4) + fetch16()) & 0xFFFFF, r[AX] & 0xFF); return;
         case 0xA3: wr16(((s[segOverride >= 0 ? segOverride : DS] << 4) + fetch16()) & 0xFFFFF, r[AX]); return;
 
         case 0xA4: case 0xA5: case 0xA6: case 0xA7:
@@ -505,13 +593,13 @@
         case 0xCB: ip = pop16(); s[CS] = pop16(); return;
         case 0xCC: interrupt(3); return;
         case 0xCD: interrupt(fetch8()); return;
-        case 0xCE: if (of) interrupt(4); return;
+        case 0xCE: if (of) { cycles += 49; interrupt(4); } return;
         case 0xCF: ip = pop16(); s[CS] = pop16(); setFlags(pop16()); return;
 
         case 0xD0: modrm(); setRM8(shift(reg, getRM8(), 1, 0)); return;
         case 0xD1: modrm(); setRM16(shift(reg, getRM16(), 1, 1)); return;
-        case 0xD2: modrm(); setRM8(shift(reg, getRM8(), r[CX] & 0xFF, 0)); return;
-        case 0xD3: modrm(); setRM16(shift(reg, getRM16(), r[CX] & 0xFF, 1)); return;
+        case 0xD2: modrm(); cycles += 4 * (r[CX] & 0xFF); setRM8(shift(reg, getRM8(), r[CX] & 0xFF, 0)); return;
+        case 0xD3: modrm(); cycles += 4 * (r[CX] & 0xFF); setRM16(shift(reg, getRM16(), r[CX] & 0xFF, 1)); return;
         case 0xD4:   // AAM
           b = fetch8();
           if (b === 0) { interrupt(0); return; }
@@ -525,14 +613,14 @@
           szp8(r[AX]);
           return;
         case 0xD6: s8(0, cf ? 0xFF : 0); return;   // SALC (undocumented but present on every 8086)
-        case 0xD7: s8(0, mem[((s[segOverride >= 0 ? segOverride : DS] << 4) + ((r[BX] + (r[AX] & 0xFF)) & 0xFFFF)) & 0xFFFFF]); return;
+        case 0xD7: s8(0, rb(((s[segOverride >= 0 ? segOverride : DS] << 4) + ((r[BX] + (r[AX] & 0xFF)) & 0xFFFF)) & 0xFFFFF)); return;
         case 0xD8: case 0xD9: case 0xDA: case 0xDB: case 0xDC: case 0xDD: case 0xDE: case 0xDF:
           modrm(); return;   // ESC: no coprocessor fitted
 
-        case 0xE0: t = fetchS8(); r[CX]--; if (r[CX] !== 0 && !zf) ip = (ip + t) & 0xFFFF; return;
-        case 0xE1: t = fetchS8(); r[CX]--; if (r[CX] !== 0 && zf) ip = (ip + t) & 0xFFFF; return;
-        case 0xE2: t = fetchS8(); r[CX]--; if (r[CX] !== 0) ip = (ip + t) & 0xFFFF; return;
-        case 0xE3: t = fetchS8(); if (r[CX] === 0) ip = (ip + t) & 0xFFFF; return;
+        case 0xE0: t = fetchS8(); r[CX]--; if (r[CX] !== 0 && !zf) { ip = (ip + t) & 0xFFFF; cycles += 14; } return;
+        case 0xE1: t = fetchS8(); r[CX]--; if (r[CX] !== 0 && zf) { ip = (ip + t) & 0xFFFF; cycles += 12; } return;
+        case 0xE2: t = fetchS8(); r[CX]--; if (r[CX] !== 0) { ip = (ip + t) & 0xFFFF; cycles += 12; } return;
+        case 0xE3: t = fetchS8(); if (r[CX] === 0) { ip = (ip + t) & 0xFFFF; cycles += 12; } return;
 
         case 0xE4: s8(0, inb(fetch8())); return;
         case 0xE5: a = fetch8(); r[AX] = inb(a) | (inb(a + 1) << 8); return;
@@ -560,6 +648,7 @@
 
         case 0xFE:
           modrm(); c = cf;
+          cycles += mod === 3 ? 3 : 15;
           if (reg === 0) setRM8(add8(getRM8(), 1, 0));
           else if (reg === 1) setRM8(sub8(getRM8(), 1, 0));
           else throw fault('Invalid opcode FE /' + reg);
@@ -569,22 +658,23 @@
         case 0xFF:
           modrm();
           switch (reg) {
-            case 0: c = cf; setRM16(add16(getRM16(), 1, 0)); cf = c; return;
-            case 1: c = cf; setRM16(sub16(getRM16(), 1, 0)); cf = c; return;
-            case 2: t = getRM16(); push16(ip); ip = t; return;
+            case 0: cycles += mod === 3 ? 3 : 15; c = cf; setRM16(add16(getRM16(), 1, 0)); cf = c; return;
+            case 1: cycles += mod === 3 ? 3 : 15; c = cf; setRM16(sub16(getRM16(), 1, 0)); cf = c; return;
+            case 2: cycles += mod === 3 ? 16 : 21; t = getRM16(); push16(ip); ip = t; return;
             case 3:
-              needMem('CALL FAR');
+              needMem('CALL FAR'); cycles += 37;
               a = rd16(ea); b = rd16((ea + 2) & 0xFFFFF);
               push16(s[CS]); push16(ip);
               s[CS] = b; ip = a;
               return;
-            case 4: ip = getRM16(); return;
+            case 4: cycles += mod === 3 ? 11 : 18; ip = getRM16(); return;
             case 5:
-              needMem('JMP FAR');
+              needMem('JMP FAR'); cycles += 24;
               a = rd16(ea); b = rd16((ea + 2) & 0xFFFFF);
               s[CS] = b; ip = a;
               return;
             case 6:
+              cycles += mod === 3 ? 11 : 16;
               t = getRM16();
               if (mod === 3 && rm === SP) t = (t - 2) & 0xFFFF;
               push16(t);
@@ -612,14 +702,17 @@
     self.setFlags = setFlags;
     self.setCF = function (v) { cf = v ? 1 : 0; };
     self.setZF = function (v) { zf = v ? 1 : 0; };
-    self.getCycles = function () { return cycles; };
+    self.getCycles = function () { return cycles; };            // clock cycles since reset, idle time included
+    self.getExecuted = function () { return cycles - idle; };   // clock cycles spent executing instructions
     self.read16 = rd16;
     self.write16 = wr16;
     self.push16 = push16;
     self.stop = function () { stop = true; };
     // Let time pass without executing anything (the host uses this to skip idle waits).
-    self.skipTo = function (target) { if (cycles < target) cycles = target; };
+    self.skipTo = function (target) { if (cycles < target) { idle += target - cycles; cycles = target; } };
     self.step = step;
+    // Route data access to A000:0000-FFFF through { read(offset), write(offset, byte) }; null for plain memory.
+    self.setVideo = function (hook) { video = hook || null; };
 
     self.reset = function () {
       mem.fill(0);
@@ -627,15 +720,18 @@
       s.fill(0);
       ip = 0;
       setFlags(0);
-      cycles = 0;
+      cycles = 0; idle = 0; limit = Infinity; resumed = false;
       stop = false;
+      video = null;
       self.halted = false;
     };
 
     // Run until `target` cycles have elapsed in total, or something calls stop().
     self.runUntil = function (target) {
       stop = false;
+      limit = target;
       while (cycles < target && !stop) step();
+      limit = Infinity;
     };
   }
 

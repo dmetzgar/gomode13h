@@ -149,5 +149,147 @@ t = lib('mov al, 200\n mov ah, 11\n mov bl, 22\n mov bh, 33\n call set_palette_e
   check(n >= 30 && n <= 32, `30 x wait_retrace takes 30 frames (took ${n})`);
 }
 
+// --- Mode X: unchained planes, write modes, page flipping, 240 lines ----------------
+function raw(body, frames) {
+  const r = build('org 100h\n mov ax, 13h\n int 10h\n mov ax, 0A000h\n mov es, ax\n' + body + '\nhang: jmp hang\n', 'modex-test');
+  const m = new Machine();
+  m.loadProgram(r.bytes, r.origin);
+  for (let f = 0; f < (frames || 4); f++) m.runFrame();
+  check(m.state === 'running', 'mode x test runs: ' + m.state + (m.fault ? ' ' + m.fault.message : ''));
+  const plane = (p, at) => m.planes[(p << 16) | at];
+  return { m, plane, at: (x, y) => m.frame[y * 320 + x], mem: (a) => m.cpu.mem[0x10000 + a] };
+}
+const UNCHAIN = ' mov dx, 3C4h\n mov ax, 0604h\n out dx, ax\n';
+const colourOf = (() => { const t = raw(' mov byte [es:0], 9\n mov byte [es:1], 12\n mov byte [es:2], 5'); return { 9: t.at(0, 0), 12: t.at(1, 0), 5: t.at(2, 0), 0: t.at(3, 0) }; })();
+{
+  // A picture drawn in mode 13h is still there after unchaining.
+  let t = raw(' mov byte [es:320 * 3 + 6], 9\n' + UNCHAIN);
+  check(t.at(6, 3) === colourOf[9] && t.plane(2, 3 * 80 + 1) === 9, 'unchaining keeps the picture');
+
+  // Map mask: one write lands only in the enabled planes; x mod 4 is the plane.
+  t = raw(UNCHAIN + ' mov ax, 0202h\n out dx, ax\n mov byte [es:80 * 2 + 5], 12\n mov ax, 0C02h\n out dx, ax\n mov byte [es:7], 5');
+  check(t.plane(1, 165) === 12 && t.plane(0, 165) === 0 && t.plane(2, 165) === 0 && t.plane(3, 165) === 0, 'map mask selects one plane');
+  check(t.at(21, 2) === colourOf[12] && t.at(20, 2) === colourOf[0] && t.at(22, 2) === colourOf[0], 'unchained pixel shows at x = offset * 4 + plane');
+  check(t.plane(2, 7) === 5 && t.plane(3, 7) === 5 && t.plane(0, 7) === 0 && t.at(30, 0) === colourOf[5] && t.at(31, 0) === colourOf[5], 'two planes at once');
+  check(t.m.cpu.mem[0xA0000 + 7] === 0, 'plain memory at A000h is untouched while unchained');
+
+  // Read map select, and reading back through a word access.
+  t = raw(UNCHAIN + ' mov ax, 0102h\n out dx, ax\n mov byte [es:9], 11h\n mov ax, 0802h\n out dx, ax\n mov word [es:9], 4433h\n' +
+    ' mov dx, 3CEh\n mov ax, 0004h\n out dx, ax\n mov al, [es:9]\n mov [0x2000], al\n mov ax, 0304h\n out dx, ax\n mov ax, [es:9]\n mov [0x2002], ax');
+  check(t.mem(0x2000) === 0x11 && t.mem(0x2002) === 0x33 && t.mem(0x2003) === 0x44, 'read map select');
+
+  // Write mode 1: a read loads the latches, a write stores all four of them.
+  t = raw(UNCHAIN + ' mov cx, 4\n mov ah, 1\nl: mov al, 2\n out dx, ax\n mov [es:3], ah\n shl ah, 1\n loop l\n mov ax, 0F02h\n out dx, ax\n' +
+    ' mov dx, 3CEh\n mov ax, 4105h\n out dx, ax\n mov al, [es:3]\n mov [es:500], al\n mov ax, 4005h\n out dx, ax');
+  check([0, 1, 2, 3].every((p) => t.plane(p, 500) === 1 << p), 'write mode 1 copies the latches');
+
+  // rep stosw with all planes on clears four pixels per byte; rep movsb in write mode 1 copies them.
+  t = raw(UNCHAIN + ' mov ax, 0F02h\n out dx, ax\n xor di, di\n mov ax, 0707h\n mov cx, 40\n cld\n rep stosw\n mov ax, 0402h\n out dx, ax\n mov byte [es:2], 9\n mov ax, 0F02h\n out dx, ax\n' +
+    ' mov dx, 3CEh\n mov ax, 4105h\n out dx, ax\n push es\n pop ds\n xor si, si\n mov di, 800\n mov cx, 80\n rep movsb\n push cs\n pop ds');
+  let ok = true;
+  for (let i = 0; i < 80; i++) for (let p = 0; p < 4; p++) if (t.plane(p, 800 + i) !== (i === 2 && p === 2 ? 9 : 7)) ok = false;
+  check(ok && t.at(12, 10) === t.at(0, 0) && t.at(12, 10) !== colourOf[0] && t.at(10, 10) === colourOf[9], 'latched rep movsb copies a whole row');
+
+  // Bit mask and set/reset (write mode 0), and write mode 2.
+  t = raw(UNCHAIN + ' mov ax, 0F02h\n out dx, ax\n mov byte [es:4], 0FFh\n mov dx, 3CEh\n mov ax, 0F08h\n out dx, ax\n mov al, [es:4]\n mov byte [es:4], 0\n' +
+    ' mov ax, 0FF08h\n out dx, ax\n mov ax, 0500h\n out dx, ax\n mov ax, 0F01h\n out dx, ax\n mov byte [es:5], 0\n mov ax, 0001h\n out dx, ax\n mov ax, 4205h\n out dx, ax\n mov byte [es:6], 0Ah');
+  check([0, 1, 2, 3].every((p) => t.plane(p, 4) === 0xF0), 'bit mask keeps the latched bits');
+  check(t.plane(0, 5) === 0xFF && t.plane(1, 5) === 0 && t.plane(2, 5) === 0xFF && t.plane(3, 5) === 0, 'set/reset');
+  check(t.plane(0, 6) === 0 && t.plane(1, 6) === 0xFF && t.plane(2, 6) === 0 && t.plane(3, 6) === 0xFF, 'write mode 2');
+
+  // CRTC: registers read back, 240 lines, and the start address shows another page after the retrace.
+  const CRTC = ' mov dx, 3D4h\n mov si, tbl\n mov cx, 10\n cld\nc: lodsw\n out dx, ax\n loop c\n';
+  const TBL = '\ntbl: dw 0D06h, 3E07h, 4109h, 0EA10h, 0AC11h, 0DF12h, 0014h, 0E715h, 0616h, 0E317h\n';
+  t = raw(UNCHAIN + CRTC + ' mov al, 12h\n out dx, al\n inc dx\n in al, dx\n mov [0x2000], al\n mov ax, 0102h\n mov dx, 3C4h\n out dx, ax\n mov byte [es:239 * 80], 9\n mov byte [es:19200 + 80], 12\n jmp hang' + TBL);
+  check(t.mem(0x2000) === 0xDF, 'CRTC registers read back');
+  check(t.m.height === 240 && t.at(0, 239) === colourOf[9], '240 visible lines');
+  t = raw(UNCHAIN + CRTC + ' mov ax, 0102h\n mov dx, 3C4h\n out dx, ax\n mov byte [es:19200 + 80], 12\n mov dx, 3D4h\n mov ax, 4B0Ch\n out dx, ax\n mov ax, 000Dh\n out dx, ax\n jmp hang' + TBL);
+  check(t.at(0, 1) === colourOf[12] && t.at(0, 0) === colourOf[0], 'start address selects the page shown');
+
+  // Setting the mode again goes back to plain chained mode 13h, 200 lines.
+  t = raw(UNCHAIN + CRTC + ' mov ax, 13h\n int 10h\n mov byte [es:321], 9\n jmp hang' + TBL);
+  check(t.m.height === 200 && t.at(1, 1) === colourOf[9] && t.m.cpu.mem[0xA0000 + 321] === 9, 'mode set restores chained mode 13h');
+}
+
+// --- clock cycles, against the published 8086 timings ------------------------------
+// cyc(setup, body): cycles the CPU charges for `body`, measured as the difference between
+// running setup + body + hlt and setup + hlt.
+function cyc(setup, body, tail) {
+  const run = (text) => {
+    const r = build('org 100h\n' + text + '\n hlt\n' + (tail || '') + '\n%include "vga.inc"\n', 'cycles');
+    const m = new Machine();
+    m.loadProgram(r.bytes, r.origin);
+    for (let i = 0; i < 2000000 && !m.cpu.halted; i++) m.cpu.step();
+    check(m.cpu.halted, 'cycle test halts: ' + text.slice(0, 40));
+    return m.cpu.getExecuted();
+  };
+  return run(setup + '\n' + body) - run(setup);
+}
+{
+  const base = ' mov bx, 0x3000\n mov si, 4\n mov di, 8\n mov cx, 4\n mov ax, 1234h\n push ds\n pop es\n';
+  const expect = (body, want, tail) => { const got = cyc(base, body, tail); check(got === want, `cycles: ${body.trim().replace(/\n\s*/g, ' / ')} = ${got}, expected ${want}`); };
+  expect(' mov ax, bx', 2);
+  expect(' mov ax, [bx]', 8 + 5);
+  expect(' mov ax, [0x3000]', 10);                       // accumulator form
+  expect(' mov dx, [0x3000]', 8 + 6);
+  expect(' mov [bx + si], ax', 9 + 7);
+  expect(' mov [bx + di + 2], ax', 9 + 12);
+  expect(' mov [es:di], al', 2 + 9 + 5);                 // segment override costs 2
+  expect(' mov word [bx], 5', 10 + 5);
+  expect(' mov dx, 5', 4);
+  expect(' add ax, 5', 4);
+  expect(' add bx, cx', 3);
+  expect(' add dx, [bx]', 9 + 5);
+  expect(' add [bx], dx', 16 + 5);
+  expect(' add word [bx + si + 2], 5', 17 + 11);
+  expect(' cmp word [bx], 5', 10 + 5);
+  expect(' cmp [bx], dx', 9 + 5);
+  expect(' inc bx', 2);
+  expect(' inc bl', 3);
+  expect(' inc word [bx]', 15 + 5);
+  expect(' neg bx', 3);
+  expect(' not word [bx]', 16 + 5);
+  expect(' test al, 8', 4);
+  expect(' test bl, 8', 5);
+  expect(' xchg ax, bx', 3);
+  expect(' xchg cx, bx', 4);
+  expect(' lea dx, [bx + si + 2]', 2 + 11);
+  expect(' push ax\n pop ax', 11 + 8);
+  expect(' push ds\n pop ds', 10 + 8);
+  expect(' pushf\n popf', 10 + 8);
+  expect(' shl ax, 1', 2);
+  expect(' shl ax, cl', 8 + 4 * 4);
+  expect(' shr word [bx], 1', 15 + 5);
+  expect(' shl word [bx], cl', 20 + 5 + 4 * 4);
+  expect(' cbw\n cwd', 2 + 5);
+  expect(' xor dx, dx\n jz t\n nop\nt:', 3 + 16);
+  expect(' xor dx, dx\n jnz t\n nop\nt:', 3 + 4 + 3);
+  expect(' jmp t\n nop\nt:', 15);
+  expect(' mov cx, 3\nt: loop t', 4 + 17 + 17 + 5);
+  expect(' call f', 19 + 8, 'f: ret');
+  expect(' mov dx, 3DAh\n in al, dx', 4 + 8);
+  expect(' mov dx, 3C8h\n out dx, al', 4 + 8);
+  expect(' cld\n mov cx, 100\n rep movsw', 2 + 4 + 9 + 17 * 100);
+  expect(' mov cx, 100\n rep stosb', 4 + 9 + 10 * 100);
+  expect(' movsb\n stosw\n lodsb', 18 + 11 + 12);
+  expect(' xlat', 11);
+  let got = cyc(base, ' mul bx'); check(got >= 118 && got <= 133, 'cycles: mul bx in 118-133, got ' + got);
+  got = cyc(base, ' mov ax, 100\n mov bl, 7\n div bl') - 8; check(got >= 80 && got <= 90, 'cycles: div bl in 80-90, got ' + got);
+  got = cyc(base, ' cwd\n idiv bx') - 5; check(got >= 165 && got <= 184, 'cycles: idiv bx in 165-184, got ' + got);
+  got = cyc(base, ' imul bl'); check(got >= 80 && got <= 98, 'cycles: imul bl in 80-98, got ' + got);
+
+  // The whole-screen copy, as costed by hand from the same tables: 171 cycles around a 544,009-cycle rep movsw.
+  got = cyc(' call vga_init\n', ' call copy_buffer');
+  check(got === 544180, 'cycles: call copy_buffer = ' + got + ', expected 544180');
+
+  // A REP that runs past the end of a time slice carries on afterwards and costs the same.
+  const r = build('org 100h\n call vga_init\n call copy_buffer\n hlt\n%include "vga.inc"\n', 'slices');
+  const whole = new Machine(), sliced = new Machine();
+  whole.loadProgram(r.bytes, r.origin); sliced.loadProgram(r.bytes, r.origin);
+  for (let i = 0; i < 100000 && !whole.cpu.halted; i++) whole.cpu.step();
+  for (let t = 1000; !sliced.cpu.halted && t < 5e6; t += 1000) sliced.cpu.runUntil(t);
+  check(sliced.cpu.halted && sliced.cpu.getExecuted() === whole.cpu.getExecuted(), 'an interrupted rep movsw costs the same: ' + sliced.cpu.getExecuted() + ' vs ' + whole.cpu.getExecuted());
+}
+
 console.log(failures ? `${failures} FAILED` : 'all example and library checks passed');
 process.exit(failures ? 1 : 0);

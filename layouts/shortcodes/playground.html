@@ -5,15 +5,13 @@
 <div class="pg" data-base="{{ "playground/" | relURL }}"{{ with .Get "example" }} data-example="{{ . }}"{{ end }}>
   <div class="pg-screens">
     <canvas class="pg-canvas" width="320" height="200" tabindex="0" aria-label="Mode 13h screen"></canvas>
-    <canvas class="pg-back" width="320" height="200" hidden aria-label="Back buffer"></canvas>
   </div>
   <div class="pg-status" role="status">Loading…</div>
   <div class="pg-bar">
     <button type="button" class="pg-run" title="Assemble and run (Ctrl+Enter)">Run</button>
     <button type="button" class="pg-pause">Pause</button>
     <label>Example <select class="pg-example"></select></label>
-    <label>Refresh <select class="pg-refresh"><option value="60">60 Hz</option><option value="70">70 Hz</option></select></label>
-    <label><input type="checkbox" class="pg-showback"> Show back buffer</label>
+    <label>Refresh <select class="pg-refresh"><option value="30">30 Hz</option><option value="60" selected>60 Hz</option><option value="70">70 Hz</option></select></label>
   </div>
   <div class="pg-tabs" role="tablist">
     <button type="button" role="tab" data-file="program" aria-selected="true">program.asm</button>
