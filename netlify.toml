@@ -1,0 +1,8 @@
+# Netlify build settings. The theme needs a recent Hugo (it uses hugo.Data, added in v0.156),
+# so pin the version here instead of relying on the build image's default.
+[build]
+  command = "hugo --gc --minify"
+  publish = "public"
+
+[build.environment]
+  HUGO_VERSION = "0.170.0"
