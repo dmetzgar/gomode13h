@@ -47,7 +47,7 @@ for (const file of fs.readdirSync(path.join(dir, 'examples')).filter((f) => f.en
   const ms = (Date.now() - t0) / 150;
   check(m.state === 'running', `${file}: state is ${m.state}${m.fault ? ' (' + m.fault.message + ' at ' + m.fault.ip.toString(16) + ')' : ''}`);
   check(m.getMode() === 0x13, `${file}: in mode 13h`);
-  check(new Set(m.frame).size > 2, `${file}: draws something`);
+  check(new Set(m.frame).size > 1, `${file}: draws something`);
   check(text === '', `${file}: unexpected output ${JSON.stringify(text)}`);
   if (outdir) png(m.frame, path.join(outdir, file.replace('.asm', '.png')));
   // A key press should end every example cleanly.

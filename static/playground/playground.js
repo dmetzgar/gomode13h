@@ -8,6 +8,7 @@
   var EXAMPLES = [
     { file: 'shapes.asm', title: 'Shapes (every routine)' },
     { file: 'putpixel.asm', title: 'Put pixel' },
+    { file: 'starfield.asm', title: 'Starfield' },
     { file: 'bounce.asm', title: 'Double buffering' },
     { file: 'palette.asm', title: 'Palette cycling' },
     { file: 'fire.asm', title: 'Fire' },
