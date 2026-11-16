@@ -15,6 +15,7 @@
     { file: 'copper.asm', title: 'Copper bars' },
     { file: 'modex.asm', title: 'Mode X page flipping' }
   ];
+  var DEFAULT_EXAMPLE = 'starfield.asm';   // what a first visit starts with
 
   // The CPU is not held to any period speed: each frame gets as many clock cycles as this
   // browser can emulate in about FRAME_SHARE of the frame time, re-measured as it runs.
@@ -288,8 +289,8 @@
     fetchText('vga.inc').then(function (text) {
       files['vga.inc'] = text;
       if (saved) { files.program = saved; editor.value = saved; run(); return null; }
-      exampleSelect.value = pinned || EXAMPLES[0].file;
-      return loadExample(pinned || EXAMPLES[0].file);
+      exampleSelect.value = pinned || DEFAULT_EXAMPLE;
+      return loadExample(pinned || DEFAULT_EXAMPLE);
     }).catch(function (e) {
       status.textContent = e.message;
     });
